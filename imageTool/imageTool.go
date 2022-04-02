@@ -3,6 +3,7 @@ package imageTool
 import (
 	"bufio"
 	"image"
+	"image/color"
 	"image/png"
 	_ "image/png"
 	"os"
@@ -13,7 +14,7 @@ import (
 )
 
 const (
-	con_compare_num = 16
+	con_compare_num = 30
 )
 
 func LoadImage(name string) (img image.Image, err error) {
@@ -63,7 +64,7 @@ func CompareImage(imgA, imgB image.Image) bool {
 	for i := 1; i <= x; i++ {
 		for j := 1; j <= y; j++ {
 			p := &image.Point{X: i * xp, Y: j * yp}
-			if imgA.At(p.X, p.Y) != imgB.At(p.X, p.Y) {
+			if CompareColor(imgA.At(p.X, p.Y), imgB.At(p.X, p.Y)) {
 				return false
 			}
 		}
@@ -73,5 +74,25 @@ func CompareImage(imgA, imgB image.Image) bool {
 }
 
 func CapScreen(rect model.Rect) image.Image {
-	return robotgo.CaptureImg(rect.X, rect.H, rect.W, rect.Y)
+	bitmap := robotgo.CaptureScreen(rect.X, rect.Y, rect.W, rect.H)
+	// use `defer robotgo.FreeBitmap(bit)` to free the bitmap
+	defer robotgo.FreeBitmap(bitmap)
+
+	return robotgo.ToImage(bitmap)
+}
+
+func CapFullScreen() image.Image {
+	bitmap := robotgo.CaptureScreen()
+	// use `defer robotgo.FreeBitmap(bit)` to free the bitmap
+	defer robotgo.FreeBitmap(bitmap)
+
+	return robotgo.ToImage(bitmap)
+}
+
+func CompareColor(c1 color.Color, c2 color.Color) (isEqual bool) {
+	r1, g1, b1, a1 := c1.RGBA()
+	r2, g2, b2, a2 := c2.RGBA()
+
+	isEqual = r1 == r2 && g1 == g2 && b1 == b2 && a1 == a2
+	return
 }

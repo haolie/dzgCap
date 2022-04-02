@@ -8,14 +8,20 @@ import (
 
 	"github.com/go-vgo/robotgo"
 
+	"dzgCap/ScreenModel"
 	"dzgCap/capMager"
 	. "dzgCap/model"
 )
 
-var (
-	rectMeetingBtn      = *NewRect(0, 0, 0, 0)
-	pointMeetingJoinBtn = image.Point{X: 0, Y: 0}
-)
+func init() {
+	// 组成宴会加入按钮（验证）区域
+	ScreenModel.RegisterModelKey(int32(TaskEnum_Meeting), int32(ScreenModel.ModelTypeEnum_Rect), Sys_Key_Rect_Meeting_Join_Btn)
+	// 组成宴会加入按钮验证图片
+	ScreenModel.RegisterModelKey(int32(TaskEnum_Meeting), int32(ScreenModel.ModelTypeEnum_Image), Sys_Key_Rect_Meeting_Join_Btn)
+	// 注册参宴点击位置
+	ScreenModel.RegisterModelKey(int32(TaskEnum_Meeting), int32(ScreenModel.ModelTypeEnum_Point), Sys_Key_Point_Meeting_Join)
+
+}
 
 type meetingTask struct {
 	startTime   time.Time
@@ -23,6 +29,9 @@ type meetingTask struct {
 	curPv       IPageView
 	closeSignal chan struct{}
 	status      int32
+
+	clickP image.Point
+	joinR  Rect
 }
 
 func (m *meetingTask) GetKey() TaskEnum {
@@ -40,6 +49,17 @@ func (m *meetingTask) GetEndTime() time.Time {
 	return m.endTime
 }
 func (m *meetingTask) Start() {
+	var exists bool
+	m.clickP, exists = ScreenModel.GetPointModel(int32(TaskEnum_Meeting), Sys_Key_Point_Meeting_Join)
+	if !exists {
+		panic("")
+	}
+
+	m.joinR, exists = ScreenModel.GetRectModel(int32(TaskEnum_Meeting), Sys_Key_Rect_Meeting_Join_Btn)
+	if !exists {
+		panic("")
+	}
+
 	for {
 		status := atomic.LoadInt32(&m.status)
 		if status == int32(TaskStatusEnum_Runing) {
@@ -52,7 +72,7 @@ func (m *meetingTask) Start() {
 	}
 
 	m.closeSignal = make(chan struct{})
-	go joinMeeting(m.closeSignal)
+	go m.joinMeeting(m.closeSignal)
 }
 
 func (m *meetingTask) Stop() {
@@ -84,7 +104,7 @@ func (m *meetingTask) Release() {
 
 }
 
-func joinMeeting(closeCh chan struct{}) {
+func (m *meetingTask) joinMeeting(closeCh chan struct{}) {
 
 	timeCh := time.After(500)
 
@@ -93,26 +113,26 @@ func joinMeeting(closeCh chan struct{}) {
 		case <-closeCh:
 			return
 		case <-timeCh:
-			doJoin()
+			m.doJoin()
 			timeCh = time.After(500)
 		}
 	}
 
 }
 
-func doJoin() {
-	if !isMeetingJoinView() {
+func (m *meetingTask) doJoin() {
+	if !m.isMeetingJoinView() {
 		return
 	}
 
-	capMager.ClickRect(rectMeetingBtn)
+	capMager.ClickRect(m.joinR)
 	robotgo.MilliSleep(1000)
-	capMager.ClickPoint(pointMeetingJoinBtn.X, pointMeetingJoinBtn.Y)
+	capMager.ClickPoint(m.clickP.X, m.clickP.Y)
 	robotgo.MilliSleep(200)
 }
 
-func isMeetingJoinView() bool {
-	canJoin, err := capMager.CompareRectToCash(rectMeetingBtn, Sys_Key_Rect_Meeting_Join_Btn)
+func (m *meetingTask) isMeetingJoinView() bool {
+	canJoin, err := capMager.CompareRectToCash(m.joinR, Sys_Key_Rect_Meeting_Join_Btn)
 	if err != nil {
 		fmt.Printf("verify meetingJoin faild err:%v\n", err)
 		return false

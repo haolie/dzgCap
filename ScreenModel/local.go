@@ -45,7 +45,18 @@ func GetTaskModel(modelKey string, taskId int32) (model *TaskSaveModel, exists b
 		temp.rectMap[item.Key] = item
 	}
 
+	saveCash(modelKey, taskId, &temp)
+
 	return &temp, true
+}
+
+func saveCash(modelKey string, taskId int32, model *TaskSaveModel) {
+
+	if _, exists := modelCashMap[modelKey]; !exists {
+		modelCashMap[modelKey] = make(map[int32]*TaskSaveModel)
+	}
+
+	modelCashMap[modelKey][taskId] = model
 }
 
 func SaveTaskModel(modelKey string, taskId int32, model *TaskSaveModel) error {
@@ -66,7 +77,14 @@ func SaveTaskModel(modelKey string, taskId int32, model *TaskSaveModel) error {
 
 	fileName := getSavePath(modelKey, taskId)
 
-	return ioutil.WriteFile(fileName, data, 0666)
+	err = ioutil.WriteFile(fileName, data, 0666)
+	if err != nil {
+		return err
+	}
+
+	saveCash(modelKey, taskId, model)
+
+	return nil
 }
 
 func getSavePath(modelKey string, taskId int32) string {

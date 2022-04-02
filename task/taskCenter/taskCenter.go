@@ -3,6 +3,7 @@ package taskCenter
 import (
 	"fmt"
 
+	"dzgCap/ScreenModel"
 	"dzgCap/model"
 )
 
@@ -21,4 +22,25 @@ func RegisterTask(task model.ITask) {
 func GetTask(taskType model.TaskEnum) (task model.ITask, exists bool) {
 	task, exists = taskMap[taskType]
 	return
+}
+
+func StartTask(taskType model.TaskEnum) {
+	task, exists := taskMap[taskType]
+	if !exists {
+		panic("not find Task")
+	}
+
+	_, errList := ScreenModel.BaseVerify(model.Sys_Con_Model_Base)
+	if len(errList) > 0 {
+		fmt.Println(errList)
+		panic(" please config ")
+	}
+
+	_, errList = ScreenModel.VerifyTask(model.Sys_Con_Model_Base, int32(task.GetKey()))
+	if len(errList) > 0 {
+		fmt.Println(errList)
+		panic(" please config ")
+	}
+
+	task.Start()
 }
