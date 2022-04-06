@@ -24,6 +24,11 @@ var pvMap = map[PViewEnum]string{
 	PViewEnum_MeettingRewardView: "MeetingRewardView",
 }
 
+func GetPVName(enum PViewEnum) (name string, exists bool) {
+	name, exists = pvMap[enum]
+	return
+}
+
 func PVVerify(pv PViewEnum) bool {
 	_, exists := pvMap[pv]
 	return exists

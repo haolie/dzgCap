@@ -6,11 +6,12 @@ import (
 	"io/ioutil"
 	"os"
 
-	"dzgCap/model"
+	"dzgCap/src/model"
 )
 
 var (
 	modelCashMap = make(map[string]map[int32]*TaskSaveModel, 4)
+	basePath     = "./"
 )
 
 func GetTaskModel(modelKey string, taskId int32) (model *TaskSaveModel, exists bool) {
@@ -89,7 +90,8 @@ func SaveTaskModel(modelKey string, taskId int32, model *TaskSaveModel) error {
 
 func getSavePath(modelKey string, taskId int32) string {
 
-	dirPath := fmt.Sprintf("../%s/%s", model.Sys_Con_Path_Config, modelKey)
+	dirPath := fmt.Sprintf("%s%s/%s", basePath, model.Sys_Con_Path_Config, modelKey)
+
 	_, err := os.Stat(dirPath)
 	if err != nil {
 		err = os.MkdirAll(dirPath, os.ModePerm)

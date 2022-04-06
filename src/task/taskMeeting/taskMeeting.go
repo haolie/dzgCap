@@ -2,15 +2,16 @@ package taskMeeting
 
 import (
 	"fmt"
-	"image"
 	"sync/atomic"
 	"time"
 
 	"github.com/go-vgo/robotgo"
 
-	"dzgCap/ScreenModel"
-	"dzgCap/capMager"
-	. "dzgCap/model"
+	"dzgCap/src/PageView/PageViewCenter"
+	"dzgCap/src/ScreenModel"
+	"dzgCap/src/capMager"
+	. "dzgCap/src/model"
+	"dzgCap/src/task/taskCenter"
 )
 
 func init() {
@@ -18,9 +19,8 @@ func init() {
 	ScreenModel.RegisterModelKey(int32(TaskEnum_Meeting), int32(ScreenModel.ModelTypeEnum_Rect), Sys_Key_Rect_Meeting_Join_Btn)
 	// 组成宴会加入按钮验证图片
 	ScreenModel.RegisterModelKey(int32(TaskEnum_Meeting), int32(ScreenModel.ModelTypeEnum_Image), Sys_Key_Rect_Meeting_Join_Btn)
-	// 注册参宴点击位置
-	ScreenModel.RegisterModelKey(int32(TaskEnum_Meeting), int32(ScreenModel.ModelTypeEnum_Point), Sys_Key_Point_Meeting_Join)
 
+	taskCenter.RegisterTask(new(meetingTask))
 }
 
 type meetingTask struct {
@@ -30,8 +30,7 @@ type meetingTask struct {
 	closeSignal chan struct{}
 	status      int32
 
-	clickP image.Point
-	joinR  Rect
+	joinR Rect
 }
 
 func (m *meetingTask) GetKey() TaskEnum {
@@ -50,10 +49,6 @@ func (m *meetingTask) GetEndTime() time.Time {
 }
 func (m *meetingTask) Start() {
 	var exists bool
-	m.clickP, exists = ScreenModel.GetPointModel(int32(TaskEnum_Meeting), Sys_Key_Point_Meeting_Join)
-	if !exists {
-		panic("")
-	}
 
 	m.joinR, exists = ScreenModel.GetRectModel(int32(TaskEnum_Meeting), Sys_Key_Rect_Meeting_Join_Btn)
 	if !exists {
@@ -122,13 +117,17 @@ func (m *meetingTask) joinMeeting(closeCh chan struct{}) {
 
 func (m *meetingTask) doJoin() {
 	if !m.isMeetingJoinView() {
+		if !PageViewCenter.IsMainView() {
+			PageViewCenter.GoBack()
+		}
+
 		return
 	}
 
 	capMager.ClickRect(m.joinR)
 	robotgo.MilliSleep(1000)
-	capMager.ClickPoint(m.clickP.X, m.clickP.Y)
-	robotgo.MilliSleep(200)
+	capMager.ClickRect(m.joinR)
+	robotgo.MilliSleep(500)
 }
 
 func (m *meetingTask) isMeetingJoinView() bool {

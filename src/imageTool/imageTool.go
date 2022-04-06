@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-vgo/robotgo"
 
-	"dzgCap/model"
+	"dzgCap/src/model"
 )
 
 const (
@@ -64,7 +64,7 @@ func CompareImage(imgA, imgB image.Image) bool {
 	for i := 1; i <= x; i++ {
 		for j := 1; j <= y; j++ {
 			p := &image.Point{X: i * xp, Y: j * yp}
-			if CompareColor(imgA.At(p.X, p.Y), imgB.At(p.X, p.Y)) {
+			if !CompareColor(imgA.At(p.X, p.Y), imgB.At(p.X, p.Y)) {
 				return false
 			}
 		}

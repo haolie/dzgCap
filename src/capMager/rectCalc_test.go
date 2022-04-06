@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"testing"
 
-	"dzgCap/imageTool"
+	"dzgCap/src/imageTool"
 )
 
 func TestDisLineL(t *testing.T) {
@@ -23,7 +23,7 @@ func TestDisLineL(t *testing.T) {
 
 func TestFindRect(t *testing.T) {
 	img := imageTool.CapFullScreen()
-	rectList, exists := FindRect(img, color.RGBA{
+	rect, exists := FindMinRect(img, color.RGBA{
 		R: 20,
 		G: 24,
 		B: 31,
@@ -31,12 +31,10 @@ func TestFindRect(t *testing.T) {
 	})
 
 	if exists {
-		fmt.Println(rectList)
-		for i, rectItem := range rectList {
-			rectImg := imageTool.CapScreen(rectItem)
-			imageTool.SaveImage(rectImg, fmt.Sprintf("rect%d.png", i))
-			fmt.Println(rectItem)
-		}
+		fmt.Println(rect)
+		rectImg := imageTool.CapScreen(rect)
+		imageTool.SaveImage(rectImg, fmt.Sprintf("rect%d.png", 999))
+
 	} else {
 		fmt.Println("not find rect")
 	}

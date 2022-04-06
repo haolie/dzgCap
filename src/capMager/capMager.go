@@ -6,11 +6,11 @@ import (
 
 	"github.com/go-vgo/robotgo"
 
-	"dzgCap/imageTool"
-	"dzgCap/model"
+	"dzgCap/src/imageTool"
+	"dzgCap/src/model"
 )
 
-const con_pic_dir = "pic"
+const con_pic_dir = "./pic"
 
 var (
 	imageMap = make(map[string]image.Image, 8)
@@ -30,6 +30,11 @@ func GetCashImg(name string) (img image.Image, err error) {
 	imageMap[name] = img
 
 	return
+}
+
+func SaveRectImg(rect model.Rect, name string) error {
+	img := imageTool.CapScreen(rect)
+	return SaveImg(img, name)
 }
 
 func SaveImg(img image.Image, name string) error {

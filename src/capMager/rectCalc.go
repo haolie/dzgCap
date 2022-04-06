@@ -4,8 +4,8 @@ import (
 	"image"
 	"image/color"
 
-	"dzgCap/imageTool"
-	"dzgCap/model"
+	"dzgCap/src/imageTool"
+	"dzgCap/src/model"
 )
 
 const con_dis_num = 50
@@ -91,6 +91,24 @@ func lineFromPListL(img image.Image, c color.Color, y int, plist []int) (lines [
 // 横向识别线条
 func lineFromImageH(img image.Image, c color.Color) []line {
 	return nil
+}
+
+func FindMinRect(img image.Image, c color.Color) (rect model.Rect, exists bool) {
+	list, exists := FindRect(img, c)
+	if !exists {
+		return
+	}
+
+	rect = list[0]
+	for i := 1; i < len(list); i++ {
+		if rect.W <= list[i].W && rect.H <= list[i].H {
+			continue
+		}
+
+		rect = list[i]
+	}
+
+	return rect, true
 }
 
 func FindRect(img image.Image, c color.Color) (rectList []model.Rect, exists bool) {

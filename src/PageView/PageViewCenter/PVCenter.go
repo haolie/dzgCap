@@ -3,10 +3,13 @@ package PageViewCenter
 import (
 	"fmt"
 
-	"dzgCap/model"
+	"github.com/go-vgo/robotgo"
+
+	"dzgCap/src/ScreenModel"
+	"dzgCap/src/model"
 )
 
-var pvMap map[model.PViewEnum]model.IPageView
+var pvMap = make(map[model.PViewEnum]model.IPageView, 4)
 
 // RegisterPView
 // @description: 注册PV
@@ -53,11 +56,25 @@ func TryDefineView() (pv model.IPageView, success bool) {
 // return:
 //		@mainView:
 func GoToMainView() (mainView model.IPageView) {
-	for !pvMap[model.PViewEnum_Main].IsInView() {
+	mp, exists := pvMap[model.PViewEnum_Main]
+	if !exists {
+		return
+	}
+
+	for !mp.IsInView() {
 		GoBack()
 	}
 
 	return
+}
+
+func IsMainView() bool {
+	mp, exists := pvMap[model.PViewEnum_Main]
+	if !exists {
+		return false
+	}
+
+	return mp.IsInView()
 }
 
 // GoBack
@@ -66,5 +83,12 @@ func GoToMainView() (mainView model.IPageView) {
 // return:
 //		@bool: 是否成功
 func GoBack() bool {
+	p, exists := ScreenModel.GetPointModel(0, model.Sys_Key_Point_Back)
+	if !exists {
+		return false
+	}
+
+	robotgo.MoveClick(p.X, p.Y)
+
 	return true
 }

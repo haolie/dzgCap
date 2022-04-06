@@ -5,7 +5,7 @@ import (
 	"path"
 	"testing"
 
-	"dzgCap/model"
+	"dzgCap/src/model"
 )
 
 func TestImgCapAndSave(t *testing.T) {

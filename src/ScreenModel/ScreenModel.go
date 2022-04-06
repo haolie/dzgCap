@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"image"
 
-	"dzgCap/model"
+	"dzgCap/src/model"
 )
 
 var (
 	// map[taskType]map[modelType]map[key]struct{}
-	registerMap = make(map[int32]map[int32]map[string]struct{}, 4)
+	registerMap     = make(map[int32]map[int32]map[string]struct{}, 4)
+	currentModelKey = model.Sys_Con_Model_Base
+
+	taskStatusFun func() model.TaskStatusEnum
 )
 
 func init() {
@@ -31,6 +34,10 @@ func RegisterModelKey(taskType, modelType int32, key string) {
 	}
 
 	registerMap[taskType][modelType][key] = struct{}{}
+}
+
+func RegisterStatusFun(fn func() model.TaskStatusEnum) {
+	taskStatusFun = fn
 }
 
 func BaseVerify(modelKey string) (success bool, errList []error) {
@@ -87,7 +94,21 @@ func verifyImg(modelObj *TaskSaveModel) (errList []error) {
 }
 
 func GetCurrentModelKey() string {
-	return model.Sys_Con_Model_Base
+	return currentModelKey
+}
+
+func SetScreenModel(key string) error {
+	if currentModelKey == key {
+		return nil
+	}
+
+	if taskStatusFun != nil && taskStatusFun() != model.TaskStatusEnum_Unstart {
+		return fmt.Errorf("task is running")
+	}
+
+	currentModelKey = key
+
+	return nil
 }
 
 func GetPointModel(taskType int32, key string) (p image.Point, exists bool) {
