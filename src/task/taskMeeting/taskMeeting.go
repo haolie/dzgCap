@@ -9,7 +9,6 @@ import (
 
 	"dzgCap/src/PageView/PageViewCenter"
 	"dzgCap/src/ScreenModel"
-	"dzgCap/src/capMager"
 	. "dzgCap/src/model"
 	"dzgCap/src/task/taskCenter"
 )
@@ -29,8 +28,6 @@ type meetingTask struct {
 	curPv       IPageView
 	closeSignal chan struct{}
 	status      int32
-
-	joinR Rect
 }
 
 func (m *meetingTask) GetKey() TaskEnum {
@@ -48,13 +45,6 @@ func (m *meetingTask) GetEndTime() time.Time {
 	return m.endTime
 }
 func (m *meetingTask) Start() {
-	var exists bool
-
-	m.joinR, exists = ScreenModel.GetRectModel(int32(TaskEnum_Meeting), Sys_Key_Rect_Meeting_Join_Btn)
-	if !exists {
-		panic("")
-	}
-
 	for {
 		status := atomic.LoadInt32(&m.status)
 		if status == int32(TaskStatusEnum_Runing) {
@@ -124,14 +114,14 @@ func (m *meetingTask) doJoin() {
 		return
 	}
 
-	capMager.ClickRect(m.joinR)
+	ScreenModel.GetCurrentScreenArea().ClickRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
 	robotgo.MilliSleep(1000)
-	capMager.ClickRect(m.joinR)
+	ScreenModel.GetCurrentScreenArea().ClickRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
 	robotgo.MilliSleep(500)
 }
 
 func (m *meetingTask) isMeetingJoinView() bool {
-	canJoin, err := capMager.CompareRectToCash(m.joinR, Sys_Key_Rect_Meeting_Join_Btn)
+	canJoin, err := ScreenModel.GetCurrentScreenArea().CompareRectToCash(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
 	if err != nil {
 		fmt.Printf("verify meetingJoin faild err:%v\n", err)
 		return false

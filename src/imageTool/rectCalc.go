@@ -1,10 +1,9 @@
-package capMager
+package imageTool
 
 import (
 	"image"
 	"image/color"
 
-	"dzgCap/src/imageTool"
 	"dzgCap/src/model"
 )
 
@@ -22,7 +21,7 @@ func lineFromImageL(img image.Image, c color.Color) (lines []line) {
 	pMap := make(map[int][]int, width/con_dis_num)
 	for i := 1; i*con_dis_num < width; i++ {
 		for j := 0; j < height; j++ {
-			if imageTool.CompareColor(img.At(i*con_dis_num, j), c) {
+			if CompareColor(img.At(i*con_dis_num, j), c) {
 				if _, exists := pMap[j]; !exists {
 					pMap[j] = make([]int, 0, 8)
 				}
@@ -59,7 +58,7 @@ func lineFromPListL(img image.Image, c color.Color, y int, plist []int) (lines [
 		// 寻找线条开始点
 		for i := 1; x-i >= 0; i++ {
 			// 到达边界或颜色不同 停止查找
-			if !imageTool.CompareColor(img.At(x-i, y), c) {
+			if !CompareColor(img.At(x-i, y), c) {
 				break
 			}
 
@@ -69,7 +68,7 @@ func lineFromPListL(img image.Image, c color.Color, y int, plist []int) (lines [
 		// 寻找线条开终点
 		for i := 1; x+i < imgSize.X; i++ {
 			// 到达边界或颜色不同 停止查找
-			if !imageTool.CompareColor(img.At(x+i, y), c) {
+			if !CompareColor(img.At(x+i, y), c) {
 				break
 			}
 

@@ -2,7 +2,6 @@ package ScreenModel
 
 import (
 	"fmt"
-	"image"
 
 	"dzgCap/src/model"
 )
@@ -12,7 +11,9 @@ var (
 	registerMap     = make(map[int32]map[int32]map[string]struct{}, 4)
 	currentModelKey = model.Sys_Con_Model_Base
 
-	taskStatusFun func() model.TaskStatusEnum
+	taskStatusFun      func() model.TaskStatusEnum
+	screenModelCash    = make(map[string]*ScreenArea, 4)
+	currentScreenModel *ScreenArea
 )
 
 func init() {
@@ -22,6 +23,9 @@ func init() {
 	RegisterModelKey(0, int32(ModelTypeEnum_Image), model.Sys_Key_Rect_Main_Check)
 	// 注册返回点击位置
 	RegisterModelKey(0, int32(ModelTypeEnum_Point), model.Sys_Key_Point_Back)
+	// 注册游戏区域
+	RegisterModelKey(0, int32(ModelTypeEnum_Rect), model.Sys_Key_Rect_Game)
+
 }
 
 func RegisterModelKey(taskType, modelType int32, key string) {
@@ -40,13 +44,44 @@ func RegisterStatusFun(fn func() model.TaskStatusEnum) {
 	taskStatusFun = fn
 }
 
+func GetCurrentScreenArea() *ScreenArea {
+	return currentScreenModel
+}
+
+func LoadScreenArea(key string) {
+	var exists bool
+	currentScreenModel, exists = GetScreenArea(key)
+	if !exists {
+		panic("not find ScreenArea:" + key)
+	}
+
+	err := currentScreenModel.FreshArea()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func GetScreenArea(key string) (sr *ScreenArea, exists bool) {
+	sr, exists = screenModelCash[key]
+	if exists {
+		return
+	}
+
+	sr, exists = GetScreenAreaFromLocal(key)
+	if exists {
+		screenModelCash[key] = sr
+	}
+
+	return
+}
+
 func BaseVerify(modelKey string) (success bool, errList []error) {
 	return VerifyTask(modelKey, 0)
 }
 
 func VerifyTask(modeKey string, taskType int32) (success bool, errList []error) {
 
-	modelObj, exists := GetTaskModel(modeKey, taskType)
+	modelObj, exists := GetScreenArea(modeKey)
 	if !exists {
 		errList = append(errList, fmt.Errorf("load file err"))
 		return
@@ -58,7 +93,7 @@ func VerifyTask(modeKey string, taskType int32) (success bool, errList []error) 
 	return len(errList) == 0, errList
 }
 
-func verifyPointAndRect(modelObj *TaskSaveModel, taskType int32) (errList []error) {
+func verifyPointAndRect(modelObj *ScreenArea, taskType int32) (errList []error) {
 
 	_, exists := registerMap[taskType]
 	if !exists {
@@ -71,7 +106,7 @@ func verifyPointAndRect(modelObj *TaskSaveModel, taskType int32) (errList []erro
 	}
 
 	for key := range registerMap[taskType][int32(ModelTypeEnum_Point)] {
-		if modelObj.IsExistsPoint(key) {
+		if modelObj.IsExistsPoint(taskType, key) {
 			continue
 		}
 
@@ -79,7 +114,7 @@ func verifyPointAndRect(modelObj *TaskSaveModel, taskType int32) (errList []erro
 	}
 
 	for key := range registerMap[taskType][int32(ModelTypeEnum_Rect)] {
-		if modelObj.IsExistsRect(key) {
+		if modelObj.IsExistsRect(taskType, key) {
 			continue
 		}
 
@@ -89,12 +124,12 @@ func verifyPointAndRect(modelObj *TaskSaveModel, taskType int32) (errList []erro
 	return
 }
 
-func verifyImg(modelObj *TaskSaveModel) (errList []error) {
+func verifyImg(modelObj *ScreenArea) (errList []error) {
 	return
 }
 
 func GetCurrentModelKey() string {
-	return currentModelKey
+	return GetCurrentScreenArea().Key
 }
 
 func SetScreenModel(key string) error {
@@ -111,42 +146,42 @@ func SetScreenModel(key string) error {
 	return nil
 }
 
-func GetPointModel(taskType int32, key string) (p image.Point, exists bool) {
-	modelObj, exists := GetTaskModel(GetCurrentModelKey(), taskType)
-	if !exists {
-		return
-	}
-
-	pm, exists := modelObj.pointMap[key]
-	if !exists {
-		return
-	}
-
-	p = image.Point{
-		X: pm.X,
-		Y: pm.Y,
-	}
-
-	return
-}
-
-func GetRectModel(taskType int32, key string) (r model.Rect, exists bool) {
-	modelObj, exists := GetTaskModel(GetCurrentModelKey(), taskType)
-	if !exists {
-		return
-	}
-
-	rm, exists := modelObj.rectMap[key]
-	if !exists {
-		return
-	}
-
-	r = model.Rect{
-		X: rm.X,
-		Y: rm.Y,
-		W: rm.W,
-		H: rm.H,
-	}
-
-	return
-}
+//func GetPointModel(taskType int32, key string) (p image.Point, exists bool) {
+//	modelObj, exists := GetTaskModel(GetCurrentModelKey(), taskType)
+//	if !exists {
+//		return
+//	}
+//
+//	pm, exists := modelObj.pointMap[key]
+//	if !exists {
+//		return
+//	}
+//
+//	p = image.Point{
+//		X: pm.X,
+//		Y: pm.Y,
+//	}
+//
+//	return
+//}
+//
+//func GetRectModel(taskType int32, key string) (r model.Rect, exists bool) {
+//	modelObj, exists := GetTaskModel(GetCurrentModelKey(), taskType)
+//	if !exists {
+//		return
+//	}
+//
+//	rm, exists := modelObj.rectMap[key]
+//	if !exists {
+//		return
+//	}
+//
+//	r = model.Rect{
+//		X: rm.X,
+//		Y: rm.Y,
+//		W: rm.W,
+//		H: rm.H,
+//	}
+//
+//	return
+//}

@@ -3,8 +3,6 @@ package PageViewCenter
 import (
 	"fmt"
 
-	"github.com/go-vgo/robotgo"
-
 	"dzgCap/src/ScreenModel"
 	"dzgCap/src/model"
 )
@@ -83,12 +81,7 @@ func IsMainView() bool {
 // return:
 //		@bool: 是否成功
 func GoBack() bool {
-	p, exists := ScreenModel.GetPointModel(0, model.Sys_Key_Point_Back)
-	if !exists {
-		return false
-	}
-
-	robotgo.MoveClick(p.X, p.Y)
+	ScreenModel.GetCurrentScreenArea().ClickPointKey(0, model.Sys_Key_Point_Back)
 
 	return true
 }

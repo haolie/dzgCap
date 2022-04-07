@@ -1,11 +1,8 @@
 package mainPageView
 
 import (
-	"fmt"
-
 	"dzgCap/src/PageView/PageViewCenter"
 	"dzgCap/src/ScreenModel"
-	"dzgCap/src/capMager"
 	. "dzgCap/src/model"
 )
 
@@ -34,14 +31,8 @@ func (mp *mainPv) GoToView(key string) bool {
 }
 
 func (mp *mainPv) IsInView() bool {
-	r, exists := ScreenModel.GetRectModel(0, Sys_Key_Rect_Main_Check)
-	if !exists {
-		return exists
-	}
-
-	isMain, err := capMager.CompareRectToCash(r, Sys_Key_Rect_Main_Check)
+	isMain, err := ScreenModel.GetCurrentScreenArea().CompareRectToCash(0, Sys_Key_Rect_Main_Check)
 	if err != nil {
-		fmt.Println(err)
 		return false
 	}
 

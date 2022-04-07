@@ -3,56 +3,57 @@ package ScreenModel
 import (
 	"fmt"
 	"testing"
-
-	"dzgCap/src/model"
 )
 
+const con_screen_key = "centerScreen"
+
 func TestSaveMode(t *testing.T) {
-	basePath = "../../"
-
-	modeObj := NewTaskSaveModel()
-
-	//err := capMager.SaveRectImg(model.Rect{2497, 1356, 35, 7}, model.Sys_Key_Rect_Meeting_Join_Btn)
+	//basePath = "../../"
+	//
+	//
+	//modeObj := NewTaskSaveModel()
+	//
+	//err := SaveRectImg(model.Rect{1204, 1125, 80, 20}, model.Sys_Key_Rect_Meeting_Join_Btn)
 	//if err != nil {
 	//	fmt.Println(err)
 	//	return
 	//}
-
-	// 2497,1356,  35 7
-	modeObj.AddRect(RectModel{model.Sys_Key_Rect_Meeting_Join_Btn, 2497, 1356, 35, 7})
-
-	err := SaveTaskModel("miniScreen", 1, modeObj)
-	fmt.Println(err)
+	//
+	//// 2497,1356,  35 7
+	//modeObj.AddRect(RectModel{model.Sys_Key_Rect_Meeting_Join_Btn, 1204, 1125, 80, 20})
+	//
+	//err = SaveTaskModel("centerScreen", 1, modeObj)
+	//fmt.Println(err)
 }
 
 func TestSaveMain(t *testing.T) {
-	basePath = "../../"
-
-	bm, exists := GetTaskModel("miniScreen", 0)
-	if !exists {
-		bm = NewTaskSaveModel()
-	}
-
-	//err := capMager.SaveRectImg(model.Rect{2383, 1086, 15, 15}, model.Sys_Key_Rect_Main_Check)
+	//basePath = "../../"
+	//
+	//bm, exists := GetTaskModel("centerScreen", 0)
+	//if !exists {
+	//	bm = NewTaskSaveModel()
+	//}
+	//
+	//err := SaveRectImg(model.Rect{919, 467, 25, 25}, model.Sys_Key_Rect_Main_Check)
 	//if err != nil {
 	//	fmt.Println(err)
 	//	return
 	//}
-
-	bm.AddRect(RectModel{model.Sys_Key_Rect_Main_Check, 2383, 1086, 15, 15})
-	bm.AddPoint(PointModel{model.Sys_Key_Point_Back, 2400, 1082})
-
-	err := SaveTaskModel("miniScreen", 0, bm)
-	fmt.Println(err)
+	//
+	//bm.AddRect(RectModel{model.Sys_Key_Rect_Main_Check, 919, 467, 25, 25})
+	//bm.AddPoint(PointModel{model.Sys_Key_Point_Back, 986, 473})
+	//
+	//err = SaveTaskModel("centerScreen", 0, bm)
+	//fmt.Println(err)
 }
 
 func TestGetModel(t *testing.T) {
-	d, exists := GetTaskModel("Base", 1)
-	if exists {
-		fmt.Println(*d)
-	} else {
-		fmt.Println("load flaid")
-	}
+	//d, exists := GetTaskModel("Base", 1)
+	//if exists {
+	//	fmt.Println(*d)
+	//} else {
+	//	fmt.Println("load flaid")
+	//}
 
 }
 

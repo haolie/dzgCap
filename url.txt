@@ -1,0 +1,27 @@
+localhost:8770/w/saveRect?screen=mini&rect=meetingJoinBtn&taskId=1&x=2500&y=1356&w=22&h=8
+
+localhost:8770/w/saveImage?screen=mini&rect=meetingJoinBtn&taskId=1
+
+
+
+localhost:8770/w/saveRect?screen=mini&rect=mainCheckRect&taskId=0&x=2381&y=1085&w=15&h=15
+localhost:8770/w/saveImage?screen=mini&rect=mainCheckRect&taskId=0
+
+
+2400 1084
+
+localhost:8770/w/savePoint?screen=mini&point=Point_Back&taskId=0&x=2400&y=1084
+
+localhost:8770/w/verifyScreen?screen=mini&taskId=1
+
+
+
+center
+
+localhost:8770/w/saveRect?screen=center&rect=meetingJoinBtn&taskId=1&x=2500&y=1356&w=22&h=8
+
+localhost:8770/w/saveScreenBase?screen=center
+
+localhost:8770/w/saveRectImage?screen=center&rect=mainCheckRect&taskId=0&x=1000&y=520&w=22&h=22
+
+localhost:8770/w/savePoint?screen=center&point=Point_Back&taskId=0&x=1022&y=512

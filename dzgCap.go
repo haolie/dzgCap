@@ -8,6 +8,7 @@ import (
 	"dzgCap/ConfigManger"
 	_ "dzgCap/src"
 	"dzgCap/src/ScreenModel"
+	"dzgCap/src/hServer"
 	"dzgCap/src/model"
 	"dzgCap/src/task/taskCenter"
 )
@@ -23,15 +24,9 @@ func main() {
 		panic(err)
 	}
 
-	err = ScreenModel.SetScreenModel(ConfigManger.GetScreenKey())
-	if err != nil {
-		panic(err)
-	}
+	ScreenModel.LoadScreenArea(ConfigManger.GetScreenKey())
 
-	//err = hServer.StartHServer()
-	//if err != nil {
-	//	panic(err)
-	//}
+	go hServer.StartHServer()
 
 	err = taskCenter.StartTask(model.TaskEnum_Meeting)
 	if err != nil {
@@ -64,6 +59,11 @@ func registerKeyPause() {
 func registerKeyGo() {
 	ok := robotgo.AddEvents("g", "ctrl")
 	if ok {
+		err := ScreenModel.GetCurrentScreenArea().FreshArea()
+		if err != nil {
+			fmt.Println(err)
+		}
+
 		task, exists := taskCenter.CurrentTask()
 		if exists {
 			task.Start()
