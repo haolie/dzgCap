@@ -18,7 +18,7 @@ localhost:8770/w/verifyScreen?screen=mini&taskId=1
 
 center
 
-localhost:8770/w/saveRect?screen=center&rect=meetingJoinBtn&taskId=1&x=2500&y=1356&w=22&h=8
+localhost:8770/w/saveRect?screen=center&rect=meetingJoinBtn&taskId=1&x=1290&y=1150&w=68&h=15
 
 localhost:8770/w/saveScreenBase?screen=center
 
