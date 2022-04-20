@@ -94,6 +94,11 @@ func (sr *ScreenArea) FreshArea() error {
 		return fmt.Errorf("miss game area")
 	}
 
+	empt := model.Rect{}
+	if sr.currentRect != empt && (r.H != sr.currentRect.H || r.W != sr.currentRect.W) {
+		return fmt.Errorf("screen area changed")
+	}
+
 	sr.currentRect = r
 
 	return nil
@@ -228,6 +233,7 @@ func (sr *ScreenArea) ClickRect(taskId int32, rectKey string) {
 
 func GetScreenAreaFromLocal(key string) (srObj *ScreenArea, exists bool) {
 	srObj = NewScreenArea(key)
+	srObj.currentRect = srObj.taskRectMap[0][model.Sys_Key_Rect_Game]
 
 	localPath := fmt.Sprintf("./%s/%s", model.Sys_Con_Path_Config, key)
 

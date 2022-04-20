@@ -61,7 +61,7 @@ func registerKeyGo() {
 	if ok {
 		err := ScreenModel.GetCurrentScreenArea().FreshArea()
 		if err != nil {
-			fmt.Println(err)
+			panic(err)
 		}
 
 		task, exists := taskCenter.CurrentTask()

@@ -57,7 +57,7 @@ func LoadScreenArea(key string) {
 
 	err := currentScreenModel.FreshArea()
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 }
 

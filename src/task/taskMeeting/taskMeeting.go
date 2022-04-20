@@ -13,6 +13,13 @@ import (
 	"dzgCap/src/task/taskCenter"
 )
 
+const (
+	// 连续点击判断间隔
+	con_click_span = time.Second
+	// 返回失败最大次数
+	con_max_errBack_times = 10
+)
+
 func init() {
 	// 组成宴会加入按钮（验证）区域
 	ScreenModel.RegisterModelKey(int32(TaskEnum_Meeting), int32(ScreenModel.ModelTypeEnum_Rect), Sys_Key_Rect_Meeting_Join_Btn)
@@ -28,6 +35,11 @@ type meetingTask struct {
 	curPv       IPageView
 	closeSignal chan struct{}
 	status      int32
+
+	// 上次返回点击时间
+	lastBackClickTime time.Time
+	// 连续返回点击次数
+	clickTimes int32
 }
 
 func (m *meetingTask) GetKey() TaskEnum {
@@ -109,13 +121,27 @@ func (m *meetingTask) doJoin() {
 	if !m.isMeetingJoinView() {
 		if !PageViewCenter.IsMainView() {
 			PageViewCenter.GoBack()
-		}
+			if m.lastBackClickTime.Add(con_click_span).After(time.Now()) {
+				m.clickTimes += 1
+			} else {
+				m.clickTimes = 0
+			}
 
+			m.lastBackClickTime = time.Now()
+
+			if m.clickTimes > con_max_errBack_times {
+				err := ScreenModel.GetCurrentScreenArea().FreshArea()
+				if err != nil {
+					panic(err)
+				}
+			}
+
+		}
 		return
 	}
 
 	ScreenModel.GetCurrentScreenArea().ClickRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
-	robotgo.MilliSleep(1000)
+	robotgo.MilliSleep(800)
 	ScreenModel.GetCurrentScreenArea().ClickRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
 	robotgo.MilliSleep(500)
 }

@@ -9,21 +9,11 @@ import (
 )
 
 func TestImgCapAndSave(t *testing.T) {
-	capImg := CapScreen(model.Rect{0, 0, 2560, 1408})
-	err := SaveImage(capImg, path.Join("../config", "test.png"))
+	capImg := CapScreen(model.Rect{X: 2414, Y: 1085, W: 8, H: 10})
+	err := SaveImage(capImg, path.Join("../../config", "555.png"))
 	if err != nil {
 		fmt.Println(err)
 		return
-	}
-
-	getImg, err := LoadImage(path.Join("../config", "test.png"))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	if CompareImage(capImg, getImg) {
-		fmt.Println("Success")
 	}
 
 }
