@@ -125,7 +125,7 @@ func (m *meetingTask) Release() {
 func (m *meetingTask) joinMeeting(closeCh chan struct{}) {
 
 	timeCh := time.After(500)
-	drawCh := time.After(2000)
+	//drawCh := time.After(2000)
 
 	for {
 		select {
@@ -134,9 +134,9 @@ func (m *meetingTask) joinMeeting(closeCh chan struct{}) {
 		case <-timeCh:
 			m.doJoin()
 			timeCh = time.After(500)
-		case <-drawCh:
-			m.drawMeetingReward()
-			drawCh = time.After(time.Minute)
+			//case <-drawCh:
+			//	m.drawMeetingReward()
+			//	drawCh = time.After(time.Minute)
 		}
 	}
 
