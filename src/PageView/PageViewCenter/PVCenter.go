@@ -2,6 +2,7 @@ package PageViewCenter
 
 import (
 	"fmt"
+	"time"
 
 	"dzgCap/src/ScreenModel"
 	"dzgCap/src/model"
@@ -52,18 +53,36 @@ func TryDefineView() (pv model.IPageView, success bool) {
 // @description: 返回主界面
 // parameter:
 // return:
-//		@mainView:
-func GoToMainView() (mainView model.IPageView) {
+//		@success:
+func GoToMainView() (success bool) {
 	mp, exists := pvMap[model.PViewEnum_Main]
 	if !exists {
 		return
 	}
 
-	for !mp.IsInView() {
-		GoBack()
+	fn := func(n int) bool {
+		for i := 0; i < n; i++ {
+			if mp.IsInView() {
+				return true
+			}
+
+			GoBack()
+			time.Sleep(model.Sys_Con_jump_Waite)
+		}
+
+		return false
 	}
 
-	return
+	if fn(5) {
+		return true
+	}
+
+	err := ScreenModel.GetCurrentScreenArea().FreshArea()
+	if err != nil {
+		panic(err)
+	}
+
+	return fn(5)
 }
 
 func IsMainView() bool {

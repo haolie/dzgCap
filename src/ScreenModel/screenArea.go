@@ -9,6 +9,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-vgo/robotgo"
 
@@ -22,6 +23,12 @@ type ScreenArea struct {
 	taskPointMap map[int32]map[string]image.Point
 	taskRectMap  map[int32]map[string]model.Rect
 	taskImageMap map[int32]map[string]image.Image
+
+	clickCashTime   time.Time
+	clickCashTaskId int32
+	clickCashType   int32
+	clickCashKey    string
+	clickCashCount  int32
 }
 
 func NewScreenArea(key string) *ScreenArea {
@@ -79,6 +86,45 @@ func (sr *ScreenArea) IsExistsRect(taskId int32, key string) bool {
 	_, exists = sr.taskRectMap[taskId][key]
 
 	return exists
+}
+
+// GetRect
+// @description: 返回rect
+// parameter:
+//		@receiver sr:
+//		@taskId:
+//		@key:
+// return:
+//		@r:
+//		@exists:
+func (sr *ScreenArea) GetRect(taskId int32, key string) (r model.Rect, exists bool) {
+	_, exists = sr.taskRectMap[taskId]
+	if !exists {
+		return
+	}
+
+	r, exists = sr.taskRectMap[taskId][key]
+
+	return
+}
+
+// GetPoint
+// @description: 返回point
+// parameter:
+//		@receiver sr:
+//		@taskId:
+//		@key:
+// return:
+//		@p:
+//		@exists:
+func (sr *ScreenArea) GetPoint(taskId int32, key string) (p image.Point, exists bool) {
+	_, exists = sr.taskPointMap[taskId]
+	if !exists {
+		return
+	}
+
+	p, exists = sr.taskPointMap[taskId][key]
+	return
 }
 
 func (sr *ScreenArea) FreshArea() error {
@@ -204,7 +250,8 @@ func (sr *ScreenArea) getMove() (x, y int) {
 
 // 相对位置
 func (sr *ScreenArea) ClickPoint(x, y int) {
-	robotgo.MoveClick(x, y)
+	mx, my := sr.getMove()
+	robotgo.MoveClick(x+mx, y+my)
 }
 
 // 相对位置
@@ -215,21 +262,28 @@ func (sr *ScreenArea) ClickPointKey(taskId int32, pKey string) {
 
 	p := sr.taskPointMap[taskId][pKey]
 
-	mx, my := sr.getMove()
-	robotgo.MoveClick(p.X+mx, p.Y+my)
+	sr.ClickPoint(p.X, p.Y)
 }
 
-func (sr *ScreenArea) ClickRect(taskId int32, rectKey string) {
+func (sr *ScreenArea) ClickKeyRect(taskId int32, rectKey string) {
 	if !sr.IsExistsRect(taskId, rectKey) {
 		return
 	}
 
-	rect := sr.taskRectMap[taskId][rectKey]
+	sr.ClickRect(sr.taskRectMap[taskId][rectKey])
+}
+
+func (sr *ScreenArea) ClickRect(r model.Rect) {
 	mx, my := sr.getMove()
-	robotgo.MoveClick(rect.X+mx+rect.W/2, rect.Y+my+rect.H/2)
+	robotgo.MoveClick(r.X+mx+r.W/2, r.Y+my+r.H/2)
 }
 
 //#endregion
+
+func (sr *ScreenArea) EachIcon(fn func(p image.Point) error) error {
+
+	return nil
+}
 
 func GetScreenAreaFromLocal(key string) (srObj *ScreenArea, exists bool) {
 	srObj = NewScreenArea(key)

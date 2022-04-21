@@ -14,6 +14,27 @@ localhost:8770/w/savePoint?screen=mini&point=Point_Back&taskId=0&x=2400&y=1084
 
 localhost:8770/w/verifyScreen?screen=mini&taskId=1
 
+// 嗣王宴 验证区域
+localhost:8770/w/saveRectImage?screen=mini&rect=SiWangYan&taskId=1&x=2436&y=1099&w=60&h=20
+// 君王宴 验证区域
+localhost:8770/w/saveRectImage?screen=mini&rect=JunWangYan&taskId=1&x=2436&y=1099&w=60&h=20
+// 亲王宴 验证区域
+localhost:8770/w/saveRectImage?screen=mini&rect=QinWangYan&taskId=1&x=2436&y=1099&w=60&h=20
+// 宴会列表 验证区域
+localhost:8770/w/saveRectImage?screen=mini&rect=MeetingList&taskId=1&x=2392&y=1081&w=30&h=10
+
+// 宴会人数奖励验证区域
+localhost:8770/w/saveRectImage?screen=mini&rect=VerifyReward&taskId=1&x=2512&y=1162&w=30&h=8
+
+// 宴会界面 人数奖励点击位置
+localhost:8770/w/savePoint?screen=mini&point=GuestNumReward&taskId=1&x=2533&y=1122
+// 宴会人数奖励领奖点击位置
+localhost:8770/w/savePoint?screen=mini&point=DrawNumReward&taskId=1&x=2466&y=1330
+// 宴会Icon 位置
+localhost:8770/w/savePoint?screen=mini&point=IconLine&taskId=0&x=2394&y=1126
+
+// 宴会列表 第一宴会点击位置
+localhost:8770/w/savePoint?screen=mini&point=MeetingItem1&taskId=1&x=2479&y=1115
 
 
 center
@@ -25,3 +46,8 @@ localhost:8770/w/saveScreenBase?screen=center
 localhost:8770/w/saveRectImage?screen=center&rect=mainCheckRect&taskId=0&x=1000&y=520&w=22&h=22
 
 localhost:8770/w/savePoint?screen=center&point=Point_Back&taskId=0&x=1022&y=512
+
+
+
+
+

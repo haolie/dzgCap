@@ -2,6 +2,7 @@ package taskMeeting
 
 import (
 	"fmt"
+	"image"
 	"sync/atomic"
 	"time"
 
@@ -18,6 +19,8 @@ const (
 	con_click_span = time.Second
 	// 返回失败最大次数
 	con_max_errBack_times = 10
+
+	con_find_icon_wait = time.Minute * 10
 )
 
 func init() {
@@ -26,7 +29,7 @@ func init() {
 	// 组成宴会加入按钮验证图片
 	ScreenModel.RegisterModelKey(int32(TaskEnum_Meeting), int32(ScreenModel.ModelTypeEnum_Image), Sys_Key_Rect_Meeting_Join_Btn)
 
-	taskCenter.RegisterTask(new(meetingTask))
+	taskCenter.RegisterTask(newMeetingTask())
 }
 
 type meetingTask struct {
@@ -40,6 +43,24 @@ type meetingTask struct {
 	lastBackClickTime time.Time
 	// 连续返回点击次数
 	clickTimes int32
+
+	// 主界面宴会Icon点击位置
+	meetingIconP     *image.Point
+	lastIconMissTime time.Time
+}
+
+func newMeetingTask() *meetingTask {
+	return &meetingTask{
+		startTime:         time.Now(),
+		endTime:           time.Now(),
+		curPv:             nil,
+		closeSignal:       nil,
+		status:            0,
+		lastBackClickTime: time.Now(),
+		clickTimes:        0,
+		meetingIconP:      nil,
+		lastIconMissTime:  time.Now().Add(-2 * con_find_icon_wait),
+	}
 }
 
 func (m *meetingTask) GetKey() TaskEnum {
@@ -104,6 +125,7 @@ func (m *meetingTask) Release() {
 func (m *meetingTask) joinMeeting(closeCh chan struct{}) {
 
 	timeCh := time.After(500)
+	drawCh := time.After(2000)
 
 	for {
 		select {
@@ -112,6 +134,9 @@ func (m *meetingTask) joinMeeting(closeCh chan struct{}) {
 		case <-timeCh:
 			m.doJoin()
 			timeCh = time.After(500)
+		case <-drawCh:
+			m.drawMeetingReward()
+			drawCh = time.After(time.Minute)
 		}
 	}
 
@@ -140,9 +165,9 @@ func (m *meetingTask) doJoin() {
 		return
 	}
 
-	ScreenModel.GetCurrentScreenArea().ClickRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
+	ScreenModel.GetCurrentScreenArea().ClickKeyRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
 	robotgo.MilliSleep(800)
-	ScreenModel.GetCurrentScreenArea().ClickRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
+	ScreenModel.GetCurrentScreenArea().ClickKeyRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
 	robotgo.MilliSleep(500)
 }
 
@@ -154,4 +179,130 @@ func (m *meetingTask) isMeetingJoinView() bool {
 	}
 
 	return canJoin
+}
+
+func (m *meetingTask) drawMeetingReward() bool {
+	if m.meetingIconP == nil {
+		if !m.findMeetingIcon() {
+			return false
+		}
+	}
+
+	// 返回主页面
+	if !PageViewCenter.GoToMainView() {
+		panic(fmt.Errorf("screen err"))
+	}
+
+	ScreenModel.GetCurrentScreenArea().ClickPoint(m.meetingIconP.X, m.meetingIconP.Y)
+	time.Sleep(Sys_Con_jump_Waite)
+	// 如果是宴会列表 点击第宴会
+	if m.isMeetingList() {
+		ScreenModel.GetCurrentScreenArea().ClickPointKey(1, Sys_Key_Point_Meeting_Item1)
+		time.Sleep(Sys_Con_jump_Waite)
+	}
+
+	if m.isMeeting() {
+		m.rewardDrawFn()
+		return true
+	}
+
+	return false
+}
+
+func (m *meetingTask) rewardDrawFn() {
+	ScreenModel.GetCurrentScreenArea().ClickPointKey(1, Sys_Key_Point_Meeting_GuestNumReward)
+	time.Sleep(Sys_Con_jump_Waite)
+	ScreenModel.GetCurrentScreenArea().ClickPointKey(1, Sys_Key_Point_Meeting_DrawNumReward)
+	time.Sleep(Sys_Con_jump_Waite)
+}
+
+func (m *meetingTask) findMeetingIcon() bool {
+	// 间隔时间内 不查找
+	if m.lastIconMissTime.Add(con_find_icon_wait).After(time.Now()) {
+		return false
+	}
+
+	m.lastBackClickTime = time.Now()
+
+	// 返回主页面
+	if !PageViewCenter.GoToMainView() {
+		panic(fmt.Errorf("screen err"))
+	}
+
+	// 获取游戏区域
+	gameRect, exists := ScreenModel.GetCurrentScreenArea().GetRect(0, Sys_Key_Rect_Game)
+	if !exists {
+		return false
+	}
+
+	// icon 点位
+	p, exists := ScreenModel.GetCurrentScreenArea().GetPoint(0, Syc_Key_Point_Icon_Line)
+	if !exists {
+		return false
+	}
+
+	// 左右宽度
+	padding := 2
+	iconW := (gameRect.W - padding*2) / 6
+	for i := 0; i < 6; i++ {
+		if !PageViewCenter.GoToMainView() {
+			panic(fmt.Errorf("screen err"))
+		}
+
+		px := gameRect.X + iconW*i + padding + iconW/2
+
+		// 点击Icon
+		ScreenModel.GetCurrentScreenArea().ClickPoint(px, p.Y)
+		time.Sleep(Sys_Con_jump_Waite)
+
+		//找到宴会列表 返回true|| 找到宴会 返回true
+		if m.isMeetingList() || m.isMeeting() {
+			m.meetingIconP = &image.Point{
+				X: px,
+				Y: p.Y,
+			}
+			return true
+		}
+	}
+
+	return false
+}
+
+func (m *meetingTask) isMeetingList() bool {
+	sm, err := ScreenModel.GetCurrentScreenArea().CompareRectToCash(1, Sys_key_rect_Meeting_List)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	return sm
+}
+
+func (m *meetingTask) isMeeting() bool {
+	sm, err := ScreenModel.GetCurrentScreenArea().CompareRectToCash(1, Sys_key_rect_Meeting_SiWangYan)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+
+	if sm {
+		return true
+	}
+
+	sm, err = ScreenModel.GetCurrentScreenArea().CompareRectToCash(1, Sys_key_rect_Meeting_QinWangYan)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+
+	if sm {
+		return true
+	}
+
+	sm, err = ScreenModel.GetCurrentScreenArea().CompareRectToCash(1, Sys_key_rect_Meeting_JunWangYan)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+
+	return sm
 }

@@ -2,6 +2,7 @@ package hServer
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/kataras/iris/v12"
 
@@ -43,4 +44,10 @@ func saveRectImage(ctx iris.Context) {
 		ctx.WriteString(fmt.Sprintf("%s", err))
 		return
 	}
+
+	ctx.WriteString(successStr("saveRectImage"))
+}
+
+func successStr(name string) string {
+	return fmt.Sprintf("%v:%s", time.Now(), name)
 }

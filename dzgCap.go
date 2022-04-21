@@ -14,10 +14,6 @@ import (
 )
 
 func main() {
-	//fmt.Println(2345)
-	//robotgo.Move(2382, 1084)
-	//robotgo.Click("left", true)
-	//ShowMessage2("","")
 
 	err := ConfigManger.Load("")
 	if err != nil {
@@ -33,7 +29,7 @@ func main() {
 		panic(err)
 	}
 
-	RegisterKey()
+	//	RegisterKey()
 	select {}
 }
 
