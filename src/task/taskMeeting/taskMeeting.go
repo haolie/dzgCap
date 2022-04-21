@@ -144,30 +144,32 @@ func (m *meetingTask) joinMeeting(closeCh chan struct{}) {
 
 func (m *meetingTask) doJoin() {
 	if !m.isMeetingJoinView() {
-		if !PageViewCenter.IsMainView() {
-			PageViewCenter.GoBack()
-			if m.lastBackClickTime.Add(con_click_span).After(time.Now()) {
-				m.clickTimes += 1
-			} else {
-				m.clickTimes = 0
-			}
-
-			m.lastBackClickTime = time.Now()
-
-			if m.clickTimes > con_max_errBack_times {
-				err := ScreenModel.GetCurrentScreenArea().FreshArea()
-				if err != nil {
-					panic(err)
-				}
-			}
-
-		}
+		//if !PageViewCenter.IsMainView() {
+		//	PageViewCenter.GoBack()
+		//	if m.lastBackClickTime.Add(con_click_span).After(time.Now()) {
+		//		m.clickTimes += 1
+		//	} else {
+		//		m.clickTimes = 0
+		//	}
+		//
+		//	m.lastBackClickTime = time.Now()
+		//
+		//	if m.clickTimes > con_max_errBack_times {
+		//		err := ScreenModel.GetCurrentScreenArea().FreshArea()
+		//		if err != nil {
+		//			panic(err)
+		//		}
+		//	}
+		//
+		//}
 		return
 	}
 
 	ScreenModel.GetCurrentScreenArea().ClickKeyRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
 	robotgo.MilliSleep(800)
 	ScreenModel.GetCurrentScreenArea().ClickKeyRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
+	robotgo.MilliSleep(800)
+	PageViewCenter.GoBack()
 	robotgo.MilliSleep(500)
 }
 
