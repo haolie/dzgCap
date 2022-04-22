@@ -37,7 +37,7 @@ type ITask interface {
     // @description: 开始任务
     // parameter:
     // return:
-	Start()
+	Start(param interface{})
 
 	// Stop
     // @description: 结束任务

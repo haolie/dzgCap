@@ -93,7 +93,7 @@ func (m *meetingTask) GetEndTime() time.Time {
 }
 
 // 开始任务
-func (m *meetingTask) Start() {
+func (m *meetingTask) Start(param interface{}) {
 	for {
 		status := atomic.LoadInt32(&m.status)
 		if status == int32(TaskStatusEnum_Runing) {

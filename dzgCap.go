@@ -9,7 +9,6 @@ import (
 	_ "dzgCap/src"
 	"dzgCap/src/ScreenModel"
 	"dzgCap/src/hServer"
-	"dzgCap/src/model"
 	"dzgCap/src/task/taskCenter"
 )
 
@@ -24,10 +23,10 @@ func main() {
 
 	go hServer.StartHServer()
 
-	err = taskCenter.StartTask(model.TaskEnum_Meeting)
-	if err != nil {
-		panic(err)
-	}
+	//err = taskCenter.StartTask(model.TaskEnum_Meeting)
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	//	RegisterKey()
 	select {}
@@ -62,7 +61,7 @@ func registerKeyGo() {
 
 		task, exists := taskCenter.CurrentTask()
 		if exists {
-			task.Start()
+			task.Start(50)
 		}
 
 		fmt.Println("key Go on")

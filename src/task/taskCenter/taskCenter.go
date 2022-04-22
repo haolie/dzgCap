@@ -29,7 +29,7 @@ func CurrentTask() (task model.ITask, exists bool) {
 	return currentTask, currentTask != nil
 }
 
-func StartTask(taskType model.TaskEnum) error {
+func StartTask(taskType model.TaskEnum,param interface{}) error {
 	task, exists := taskMap[taskType]
 	if !exists {
 		return fmt.Errorf("not find Task")
@@ -47,7 +47,7 @@ func StartTask(taskType model.TaskEnum) error {
 		return fmt.Errorf(" please config ")
 	}
 
-	go task.Start()
+	go task.Start(param)
 	currentTask = task
 
 	return nil

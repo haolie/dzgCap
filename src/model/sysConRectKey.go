@@ -29,4 +29,7 @@ const (
 
 	// 宴会列表 第一宴会点击位置
 	Sys_Key_Point_Meeting_Item1 = "MeetingItem1"
+
+	// 连续点击任务 点击位置
+	Sys_key_Point_clickTask ="taskClickPoint"
 )
