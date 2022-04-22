@@ -12,6 +12,7 @@ var (
 	svMap = make(map[string]func(ctx iris.Context), 8)
 )
 
+// 注册http接口
 func RegisterHSv(key string, fn func(ctx iris.Context)) {
 	if _, exists := svMap[key]; exists {
 		panic("register again Hsv:" + key)
@@ -20,6 +21,11 @@ func RegisterHSv(key string, fn func(ctx iris.Context)) {
 	svMap[key] = fn
 }
 
+// StartHServer
+// @description: 开始http服务
+// parameter:
+// return:
+//		@error:
 func StartHServer() error {
 	app := iris.New()
 

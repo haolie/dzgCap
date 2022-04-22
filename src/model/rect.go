@@ -15,6 +15,14 @@ func NewRect(x, y, w, h int) *Rect {
 	return &Rect{X: x, Y: y, W: w, H: h}
 }
 
+// Relative
+// @description: 返回相对位置区域
+// parameter:
+//		@receiver r:
+//		@rx:
+//		@ry:
+// return:
+//		@Rect:
 func (r *Rect) Relative(rx, ry int) Rect {
 	return Rect{
 		X:  r.X + r.rx - rx,
@@ -31,6 +39,14 @@ func (r *Rect) DRect() Rect {
 	return r.Relative(0, 0)
 }
 
+// Move
+// @description: 移动
+// parameter:
+//		@receiver r:
+//		@x:
+//		@y:
+// return:
+//		@Rect:
 func (r *Rect) Move(x, y int) Rect {
 	return Rect{
 		X: r.X + x,

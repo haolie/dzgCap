@@ -28,6 +28,13 @@ func init() {
 
 }
 
+// RegisterModelKey
+// @description: 注册模型（点、区域、图片）
+// parameter:
+//		@taskType: 任务类型（任务Id）
+//		@modelType: 模型类型（点、区域、图片）
+//		@key: 键值
+// return:
 func RegisterModelKey(taskType, modelType int32, key string) {
 	if _, exists := registerMap[taskType]; !exists {
 		registerMap[taskType] = make(map[int32]map[string]struct{}, 4)
@@ -40,14 +47,12 @@ func RegisterModelKey(taskType, modelType int32, key string) {
 	registerMap[taskType][modelType][key] = struct{}{}
 }
 
-func RegisterStatusFun(fn func() model.TaskStatusEnum) {
-	taskStatusFun = fn
-}
-
+// 返回当前游戏区域模型
 func GetCurrentScreenArea() *ScreenArea {
 	return currentScreenModel
 }
 
+// 加载当前游戏区域模型
 func LoadScreenArea(key string) {
 	var exists bool
 	currentScreenModel, exists = GetScreenArea(key)
@@ -61,6 +66,7 @@ func LoadScreenArea(key string) {
 	}
 }
 
+// 返回指定游戏区域模型
 func GetScreenArea(key string) (sr *ScreenArea, exists bool) {
 	sr, exists = screenModelCash[key]
 	if exists {
@@ -75,10 +81,19 @@ func GetScreenArea(key string) (sr *ScreenArea, exists bool) {
 	return
 }
 
+// 验证基本项
 func BaseVerify(modelKey string) (success bool, errList []error) {
 	return VerifyTask(modelKey, 0)
 }
 
+// VerifyTask
+// @description: 验证任务模型
+// parameter:
+//		@modeKey: 游戏区域键值
+//		@taskType:  任务类型
+// return:
+//		@success:
+//		@errList:
 func VerifyTask(modeKey string, taskType int32) (success bool, errList []error) {
 
 	modelObj, exists := GetScreenArea(modeKey)
@@ -87,12 +102,15 @@ func VerifyTask(modeKey string, taskType int32) (success bool, errList []error) 
 		return
 	}
 
+	// 验证点和区域
 	errList = append(errList, verifyPointAndRect(modelObj, taskType)...)
+	// 验证图片
 	errList = append(errList, verifyImg(modelObj)...)
 
 	return len(errList) == 0, errList
 }
 
+// 验证点和区域
 func verifyPointAndRect(modelObj *ScreenArea, taskType int32) (errList []error) {
 
 	_, exists := registerMap[taskType]
@@ -105,6 +123,7 @@ func verifyPointAndRect(modelObj *ScreenArea, taskType int32) (errList []error) 
 		return
 	}
 
+	// 验证点
 	for key := range registerMap[taskType][int32(ModelTypeEnum_Point)] {
 		if modelObj.IsExistsPoint(taskType, key) {
 			continue
@@ -113,6 +132,7 @@ func verifyPointAndRect(modelObj *ScreenArea, taskType int32) (errList []error) 
 		errList = append(errList, fmt.Errorf("not find point %s", key))
 	}
 
+	// 验证区域
 	for key := range registerMap[taskType][int32(ModelTypeEnum_Rect)] {
 		if modelObj.IsExistsRect(taskType, key) {
 			continue
@@ -131,57 +151,3 @@ func verifyImg(modelObj *ScreenArea) (errList []error) {
 func GetCurrentModelKey() string {
 	return GetCurrentScreenArea().Key
 }
-
-func SetScreenModel(key string) error {
-	if currentModelKey == key {
-		return nil
-	}
-
-	if taskStatusFun != nil && taskStatusFun() != model.TaskStatusEnum_Unstart {
-		return fmt.Errorf("task is running")
-	}
-
-	currentModelKey = key
-
-	return nil
-}
-
-//func GetPointModel(taskType int32, key string) (p image.Point, exists bool) {
-//	modelObj, exists := GetTaskModel(GetCurrentModelKey(), taskType)
-//	if !exists {
-//		return
-//	}
-//
-//	pm, exists := modelObj.pointMap[key]
-//	if !exists {
-//		return
-//	}
-//
-//	p = image.Point{
-//		X: pm.X,
-//		Y: pm.Y,
-//	}
-//
-//	return
-//}
-//
-//func GetRectModel(taskType int32, key string) (r model.Rect, exists bool) {
-//	modelObj, exists := GetTaskModel(GetCurrentModelKey(), taskType)
-//	if !exists {
-//		return
-//	}
-//
-//	rm, exists := modelObj.rectMap[key]
-//	if !exists {
-//		return
-//	}
-//
-//	r = model.Rect{
-//		X: rm.X,
-//		Y: rm.Y,
-//		W: rm.W,
-//		H: rm.H,
-//	}
-//
-//	return
-//}

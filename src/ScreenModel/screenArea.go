@@ -127,7 +127,14 @@ func (sr *ScreenArea) GetPoint(taskId int32, key string) (p image.Point, exists 
 	return
 }
 
+// FreshArea
+// @description: 刷新屏幕区域
+// parameter:
+//		@receiver sr:
+// return:
+//		@error:
 func (sr *ScreenArea) FreshArea() error {
+	// 重当前屏幕查找显示区域
 	img := imageTool.CapFullScreen()
 	r, exists := imageTool.FindMinRect(img, color.RGBA{
 		R: 20,
@@ -140,6 +147,7 @@ func (sr *ScreenArea) FreshArea() error {
 		return fmt.Errorf("miss game area")
 	}
 
+	// 新的显示区域可以移动 但不但能改变大小
 	empt := model.Rect{}
 	if sr.currentRect != empt && (r.H != sr.currentRect.H || r.W != sr.currentRect.W) {
 		return fmt.Errorf("screen area changed")
@@ -166,6 +174,16 @@ func baseImgPath(taskId int32, screenkey string) string {
 	return dirPath
 }
 
+// GetCashImg
+// @description: 返回缓存图片
+// parameter:
+//		@receiver sr:
+//		@taskId:
+//		@name:
+// return:
+//		@img:
+//		@exists:
+//		@err:
 func (sr *ScreenArea) GetCashImg(taskId int32, name string) (img image.Image, exists bool, err error) {
 	if _, exists := sr.taskImageMap[taskId]; !exists {
 		sr.taskImageMap[taskId] = make(map[string]image.Image)
@@ -187,6 +205,14 @@ func (sr *ScreenArea) GetCashImg(taskId int32, name string) (img image.Image, ex
 	return img, true, nil
 }
 
+// SaveRectImg
+// @description: 保存指定区域图片
+// parameter:
+//		@receiver sr:
+//		@taskId:
+//		@rectKey:
+// return:
+//		@error:
 func (sr *ScreenArea) SaveRectImg(taskId int32, rectKey string) error {
 	if !sr.IsExistsRect(taskId, rectKey) {
 		return fmt.Errorf("not find rect:" + rectKey)
@@ -209,17 +235,27 @@ func (sr *ScreenArea) SaveRectImg(taskId int32, rectKey string) error {
 	return nil
 }
 
-// 相对位置
+// CompareRectToCash
+// @description: 对拼指定区域图片 （相对位置）
+// parameter:
+//		@receiver sr:
+//		@taskId:
+//		@rectKey:
+// return:
+//		@isSame:
+//		@err:
 func (sr *ScreenArea) CompareRectToCash(taskId int32, rectKey string) (isSame bool, err error) {
 	if !sr.IsExistsRect(taskId, rectKey) {
 		return false, nil
 	}
 
+	// 缓存图片
 	cashImg, exists, err := sr.GetCashImg(taskId, rectKey)
 	if err != nil || !exists {
 		return
 	}
 
+	// 位移
 	mx, my := sr.getMove()
 	r := sr.taskRectMap[taskId][rectKey]
 	r = r.Move(mx, my)
@@ -248,13 +284,26 @@ func (sr *ScreenArea) getMove() (x, y int) {
 
 //#region 点击
 
-// 相对位置
+//
+// ClickPoint
+// @description: 点击点位（相对位置）
+// parameter:
+//		@receiver sr:
+//		@x:
+//		@y:
+// return:
 func (sr *ScreenArea) ClickPoint(x, y int) {
 	mx, my := sr.getMove()
 	robotgo.MoveClick(x+mx, y+my)
 }
 
-// 相对位置
+// ClickPointKey
+// @description: 点击
+// parameter:
+//		@receiver sr:
+//		@taskId:
+//		@pKey:
+// return:
 func (sr *ScreenArea) ClickPointKey(taskId int32, pKey string) {
 	if !sr.IsExistsPoint(taskId, pKey) {
 		return
@@ -265,6 +314,13 @@ func (sr *ScreenArea) ClickPointKey(taskId int32, pKey string) {
 	sr.ClickPoint(p.X, p.Y)
 }
 
+// ClickKeyRect
+// @description: 点击区域中心
+// parameter:
+//		@receiver sr:
+//		@taskId:
+//		@rectKey:
+// return:
 func (sr *ScreenArea) ClickKeyRect(taskId int32, rectKey string) {
 	if !sr.IsExistsRect(taskId, rectKey) {
 		return
@@ -273,6 +329,12 @@ func (sr *ScreenArea) ClickKeyRect(taskId int32, rectKey string) {
 	sr.ClickRect(sr.taskRectMap[taskId][rectKey])
 }
 
+// ClickRect
+// @description: 点击区域中心
+// parameter:
+//		@receiver sr:
+//		@r:
+// return:
 func (sr *ScreenArea) ClickRect(r model.Rect) {
 	mx, my := sr.getMove()
 	robotgo.MoveClick(r.X+mx+r.W/2, r.Y+my+r.H/2)
@@ -280,14 +342,15 @@ func (sr *ScreenArea) ClickRect(r model.Rect) {
 
 //#endregion
 
-func (sr *ScreenArea) EachIcon(fn func(p image.Point) error) error {
-
-	return nil
-}
-
+// GetScreenAreaFromLocal
+// @description: 从本地读取游戏区域对象
+// parameter:
+//		@key: 区域键
+// return:
+//		@srObj:
+//		@exists:
 func GetScreenAreaFromLocal(key string) (srObj *ScreenArea, exists bool) {
 	srObj = NewScreenArea(key)
-	srObj.currentRect = srObj.taskRectMap[0][model.Sys_Key_Rect_Game]
 
 	localPath := fmt.Sprintf("./%s/%s", model.Sys_Con_Path_Config, key)
 
@@ -309,27 +372,42 @@ func GetScreenAreaFromLocal(key string) (srObj *ScreenArea, exists bool) {
 
 		taskId := int32(tempId)
 
+		// 获取任务保存模型
 		saveModel, exists := getTaskModel(key, taskId)
 		if !exists {
 			continue
 		}
 
+		// 读取区域列表
 		for _, item := range saveModel.RectList {
 			srObj.AddRect(taskId, item.Key, item.Rect)
 		}
 
+		// 读取点列表
 		for _, item := range saveModel.PointList {
 			srObj.AddPoint(taskId, item.Key, image.Point{X: item.X, Y: item.Y})
 		}
 	}
 
+	// 设置当前游戏区域
+	if tMap, exists := srObj.taskRectMap[0]; exists {
+		srObj.currentRect = tMap[model.Sys_Key_Rect_Game]
+	}
+
 	return srObj, true
 }
 
+// SaveScreenModel
+// @description: 保存游戏区域模型
+// parameter:
+//		@sr:
+// return:
+//		@error:
 func SaveScreenModel(sr *ScreenArea) error {
 
 	saveModelMap := make(map[int32]*TaskSaveModel, 8)
 
+	// 提取区域列表
 	for taskId, subMap := range sr.taskRectMap {
 		if _, exists := saveModelMap[taskId]; !exists {
 			saveModelMap[taskId] = NewTaskSaveModel()
@@ -340,6 +418,7 @@ func SaveScreenModel(sr *ScreenArea) error {
 		}
 	}
 
+	// 提取点列表
 	for taskId, subMap := range sr.taskPointMap {
 		if _, exists := saveModelMap[taskId]; !exists {
 			saveModelMap[taskId] = NewTaskSaveModel()
@@ -350,6 +429,7 @@ func SaveScreenModel(sr *ScreenArea) error {
 		}
 	}
 
+	// 保存模型
 	for taskId, sm := range saveModelMap {
 		err := saveTaskModel(sr.Key, taskId, sm)
 		if err != nil {

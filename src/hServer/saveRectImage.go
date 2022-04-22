@@ -1,3 +1,11 @@
+// ************************************
+// @package: hServer
+// @description: 保存区域和图片
+// @author:
+// @revision history:
+// @create date: 2022-04-22 11:33:20
+// ************************************
+
 package hServer
 
 import (

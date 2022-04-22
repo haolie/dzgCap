@@ -1,3 +1,10 @@
+// ************************************
+// @package: hServer
+// @description: 验证游戏区域模型
+// @author:
+// @revision history:
+// @create date: 2022-04-22 11:34:22
+// ************************************
 package hServer
 
 import (

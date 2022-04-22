@@ -1,3 +1,10 @@
+// ************************************
+// @package: hServer
+// @description: 验证区域是否匹配
+// @author:
+// @revision history:
+// @create date: 2022-04-22 11:33:44
+// ************************************
 package hServer
 
 import (

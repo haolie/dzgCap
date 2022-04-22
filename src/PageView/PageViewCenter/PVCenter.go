@@ -85,6 +85,11 @@ func GoToMainView() (success bool) {
 	return fn(5)
 }
 
+// IsMainView
+// @description: 是否在主界面
+// parameter:
+// return:
+//		@bool:
 func IsMainView() bool {
 	mp, exists := pvMap[model.PViewEnum_Main]
 	if !exists {
