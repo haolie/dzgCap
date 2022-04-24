@@ -28,7 +28,7 @@ func main() {
 	//	panic(err)
 	//}
 
-	//	RegisterKey()
+	RegisterKey()
 	select {}
 }
 
