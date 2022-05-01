@@ -245,10 +245,21 @@ func (m *meetingTask) drawMeetingReward() bool {
 	// 点击宴会icon
 	ScreenModel.GetCurrentScreenArea().ClickPoint(m.meetingIconP.X, m.meetingIconP.Y)
 	time.Sleep(Sys_Con_jump_Waite)
+
+	// 抢占
+	if m.grab() {
+		return false
+	}
+
 	// 如果是宴会列表 点击第宴会
 	if m.isMeetingList() {
 		ScreenModel.GetCurrentScreenArea().ClickPointKey(1, Sys_Key_Point_Meeting_Item1)
 		time.Sleep(Sys_Con_jump_Waite)
+
+		// 抢占
+		if m.grab() {
+			return false
+		}
 	}
 
 	// 如果是宴会界面 开始领奖操作
@@ -262,9 +273,16 @@ func (m *meetingTask) drawMeetingReward() bool {
 
 // 领奖操作
 func (m *meetingTask) rewardDrawFn() {
+
 	// 点击宴会人数奖励Icon
 	ScreenModel.GetCurrentScreenArea().ClickPointKey(1, Sys_Key_Point_Meeting_GuestNumReward)
 	time.Sleep(Sys_Con_jump_Waite)
+
+	// 抢占
+	if m.grab() {
+		return
+	}
+
 	// 领奖
 	ScreenModel.GetCurrentScreenArea().ClickPointKey(1, Sys_Key_Point_Meeting_DrawNumReward)
 	time.Sleep(Sys_Con_jump_Waite)
@@ -282,6 +300,11 @@ func (m *meetingTask) findMeetingIcon() bool {
 	// 返回主页面
 	if !PageViewCenter.GoToMainView() {
 		panic(fmt.Errorf("screen err"))
+	}
+
+	// 抢占
+	if m.grab() {
+		return false
 	}
 
 	// 获取游戏区域
@@ -304,11 +327,20 @@ func (m *meetingTask) findMeetingIcon() bool {
 			panic(fmt.Errorf("screen err"))
 		}
 
+		// 抢占
+		if m.grab() {
+			return false
+		}
+
 		px := gameRect.X + iconW*i + padding + iconW/2
 
 		// 点击Icon
 		ScreenModel.GetCurrentScreenArea().ClickPoint(px, p.Y)
 		time.Sleep(Sys_Con_jump_Waite)
+		// 抢占
+		if m.grab() {
+			return false
+		}
 
 		//找到宴会列表 返回true|| 找到宴会 返回true
 		if m.isMeetingList() || m.isMeeting() {
@@ -362,4 +394,14 @@ func (m *meetingTask) isMeeting() bool {
 	}
 
 	return sm
+}
+
+// 宴会抢占
+func (m *meetingTask) grab() bool {
+	if !m.isMeetingJoinView() {
+		return false
+	}
+
+	m.lastBackClickTime = time.Now().Add(-con_find_icon_wait * 2)
+	return true
 }
