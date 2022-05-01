@@ -196,6 +196,17 @@ func (m *meetingTask) doJoin() {
 	// 点击要求按钮
 	ScreenModel.GetCurrentScreenArea().ClickKeyRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
 	robotgo.MilliSleep(800)
+
+	if m.isMeetingJoinView() {
+		ScreenModel.GetCurrentScreenArea().ClickKeyRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
+		robotgo.MilliSleep(800)
+
+		if m.isMeetingJoinView() {
+			// 宴会要求已过期 todo
+
+		}
+	}
+
 	// 点击参宴按钮
 	ScreenModel.GetCurrentScreenArea().ClickKeyRect(int32(m.GetKey()), Sys_Key_Rect_Meeting_Join_Btn)
 	robotgo.MilliSleep(800)
