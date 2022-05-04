@@ -36,6 +36,12 @@ localhost:8770/w/savePoint?screen=mini&point=IconLine&taskId=0&x=2394&y=1126
 // 宴会列表 第一宴会点击位置
 localhost:8770/w/savePoint?screen=mini&point=MeetingItem1&taskId=1&x=2479&y=1115
 
+// 宴会结束提示框
+localhost:8770/w/saveRectImage?screen=big&rect=MeetingEnd&taskId=1&x=1815&y=889&w=20&h=8
+
+// 宴会无效 确认按钮区域
+localhost:8770/w/savePoint?screen=big&point=MeetingSure&taskId=1&x=1846&y=992
+
 // 点击任务  中心位置
 localhost:8770/w/savePoint?screen=mini&point=IconLine&taskId=2&x=2394&y=1126
 
@@ -53,5 +59,43 @@ localhost:8770/w/savePoint?screen=center&point=Point_Back&taskId=0&x=1022&y=512
 
 
 
+localhost:8770/w/saveImage?screen=big&rect=meetingJoinBtn&taskId=1
+localhost:8770/w/savePoint?screen=big&point=MeetingSure&taskId=1&x=1846&y=992
 
 
+
+Syc_Key_Point_Icon_Line
+
+localhost:8770/w/savePoint?screen=big&point=IconLine&taskId=0&x=1741&y=794
+
+// 嗣王宴 验证区域
+localhost:8770/w/saveRectImage?screen=big&rect=SiWangYan&taskId=1&x=1800&y=737&w=60&h=20
+// 君王宴 验证区域
+localhost:8770/w/saveRectImage?screen=big&rect=JunWangYan&taskId=1&x=1800&y=737&w=60&h=20
+// 亲王宴 验证区域
+localhost:8770/w/saveRectImage?screen=big&rect=QinWangYan&taskId=1&x=1800&y=737&w=60&h=20
+// 宴会列表 验证区域
+localhost:8770/w/saveRectImage?screen=big&rect=MeetingList&taskId=1&x=1774&y=721&w=30&h=10
+
+// 宴会人数奖励验证区域
+localhost:8770/w/saveRectImage?screen=big&rect=VerifyReward&taskId=1&x=1866&y=862&w=30&h=8
+
+// 宴会界面 人数奖励点击位置
+localhost:8770/w/savePoint?screen=big&point=GuestNumReward&taskId=1&x=1891&y=763
+// 宴会人数奖励领奖点击位置
+localhost:8770/w/savePoint?screen=big&point=DrawNumReward&taskId=1&x=1826&y=967
+// 宴会Icon 位置
+localhost:8770/w/savePoint?screen=big&point=IconLine&taskId=0&x=2394&y=1126
+
+// 宴会列表 第一宴会点击位置
+localhost:8770/w/savePoint?screen=big&point=MeetingItem1&taskId=1&x=1817&y=776
+// 宴会列表 第二宴会点击位置
+localhost:8770/w/savePoint?screen=big&point=MeetingItem2&taskId=1&x=1817&y=864
+
+// 宴会结束提示框
+localhost:8770/w/saveRectImage?screen=big&rect=MeetingEnd&taskId=1&x=1815&y=889&w=20&h=8
+
+// 宴会无效 确认按钮区域
+localhost:8770/w/savePoint?screen=big&point=MeetingSure&taskId=1&x=1846&y=992
+
+1389  864

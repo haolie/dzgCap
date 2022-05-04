@@ -70,6 +70,18 @@ func GoToMainView() (success bool) {
 			time.Sleep(model.Sys_Con_jump_Waite)
 		}
 
+		// 对比宴会邀请按钮区域图形
+		canJoin, err := ScreenModel.GetCurrentScreenArea().CompareRectToCash(1, model.Sys_Key_Rect_Meeting_Join_Btn)
+		if err != nil {
+			fmt.Printf("verify meetingJoin faild err:%v\n", err)
+			return false
+		}
+
+		if canJoin {
+			// 宴会要求已过期
+			ScreenModel.GetCurrentScreenArea().ClickPointKey(int32(1), model.Syc_Key_Point_Meeting_Sure)
+		}
+
 		return false
 	}
 
@@ -77,7 +89,15 @@ func GoToMainView() (success bool) {
 		return true
 	}
 
-	err := ScreenModel.GetCurrentScreenArea().FreshArea()
+	isEnd, err := ScreenModel.GetCurrentScreenArea().CompareRectToCash(1, model.Sys_key_rect_Meeting_End)
+	if err != nil {
+		panic(err)
+	}
+	if isEnd {
+		ScreenModel.GetCurrentScreenArea().ClickKeyRect(1, model.Sys_key_rect_Meeting_End)
+	}
+
+	err = ScreenModel.GetCurrentScreenArea().FreshArea()
 	if err != nil {
 		panic(err)
 	}
