@@ -268,6 +268,9 @@ func (m *meetingTask) drawMeetingReward() bool {
 	// 如果是宴会界面 开始领奖操作
 	if m.isMeeting() {
 		m.rewardDrawFn()
+	} else {
+		m.meetingIconP = nil
+		return false
 	}
 
 	for i := 0; i < 5; i++ {
