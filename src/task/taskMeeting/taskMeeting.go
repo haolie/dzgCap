@@ -16,6 +16,7 @@ import (
 
 	"github.com/go-vgo/robotgo"
 
+	"dzgCap/ConfigManger"
 	"dzgCap/src/PageView/PageViewCenter"
 	"dzgCap/src/ScreenModel"
 	. "dzgCap/src/model"
@@ -155,8 +156,12 @@ func (m *meetingTask) joinMeeting(closeCh chan struct{}) {
 			m.doJoin()
 			timeCh = time.After(500)
 		case <-drawCh:
+			if ConfigManger.GetMeetingRewardTime() <= 0 {
+				break
+			}
+
 			m.drawMeetingReward()
-			drawCh = time.After(time.Minute)
+			drawCh = time.After(time.Minute * time.Duration(ConfigManger.GetMeetingRewardTime()))
 		}
 	}
 

@@ -82,6 +82,14 @@ func GoToMainView() (success bool) {
 			ScreenModel.GetCurrentScreenArea().ClickPointKey(int32(1), model.Syc_Key_Point_Meeting_Sure)
 		}
 
+		isEnd, err := ScreenModel.GetCurrentScreenArea().CompareRectToCash(1, model.Sys_key_rect_Meeting_End)
+		if err != nil {
+			panic(err)
+		}
+		if isEnd {
+			ScreenModel.GetCurrentScreenArea().ClickKeyRect(1, model.Sys_key_rect_Meeting_End)
+		}
+
 		return false
 	}
 
