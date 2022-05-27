@@ -161,7 +161,8 @@ func (m *meetingTask) joinMeeting(closeCh chan struct{}) {
 			}
 
 			m.drawMeetingReward()
-			drawCh = time.After(time.Minute * time.Duration(ConfigManger.GetMeetingRewardTime()))
+			//drawCh = time.After(time.Minute * time.Duration(ConfigManger.GetMeetingRewardTime()))
+			drawCh = time.After(time.Second * time.Duration(ConfigManger.GetMeetingRewardTime()))
 		}
 	}
 
