@@ -10,8 +10,9 @@ var (
 )
 
 type Config struct {
-	ScreenModel string
-	HSPort      int
+	ScreenModel       string
+	HSPort            int
+	MeetingRewardTime int
 }
 
 func Load(path string) error {
@@ -45,4 +46,8 @@ func GetScreenKey() string {
 
 func GetHSPort() int {
 	return configObj.HSPort
+}
+
+func GetMeetingRewardTime() int {
+	return configObj.MeetingRewardTime
 }

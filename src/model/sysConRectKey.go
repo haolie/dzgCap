@@ -26,10 +26,17 @@ const (
 	Sys_Key_Point_Meeting_DrawNumReward = "DrawNumReward"
 	// 主界面 icon 位置
 	Syc_Key_Point_Icon_Line = "IconLine"
+	// 主界面 icon 位置
+	Syc_Key_Point_Meeting_Sure = "MeetingSure"
+
+	// 宴会结束界面
+	Sys_key_rect_Meeting_End = "MeetingEnd"
 
 	// 宴会列表 第一宴会点击位置
 	Sys_Key_Point_Meeting_Item1 = "MeetingItem1"
+	// 宴会列表 第er宴会点击位置
+	Sys_Key_Point_Meeting_Item2 = "MeetingItem2"
 
 	// 连续点击任务 点击位置
-	Sys_key_Point_clickTask ="taskClickPoint"
+	Sys_key_Point_clickTask = "taskClickPoint"
 )

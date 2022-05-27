@@ -1,11 +1,11 @@
 package main
 
 import (
+	"dzgCap/ConfigManger"
 	"fmt"
 
 	"github.com/go-vgo/robotgo"
 
-	"dzgCap/ConfigManger"
 	_ "dzgCap/src"
 	"dzgCap/src/ScreenModel"
 	"dzgCap/src/hServer"
@@ -23,12 +23,12 @@ func main() {
 
 	go hServer.StartHServer()
 
-	//err = taskCenter.StartTask(model.TaskEnum_Meeting)
+	//err = taskCenter.StartTask(model.TaskEnum_Meeting, 1)
 	//if err != nil {
 	//	panic(err)
 	//}
 
-	RegisterKey()
+	//RegisterKey()
 	select {}
 }
 
