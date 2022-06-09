@@ -10,3 +10,7 @@ import (
 func LogInfo(info string) {
 	fmt.Printf("%s:%s\n", tools.ToTimeStr(time.Now()), info)
 }
+
+func LogErr(err string) {
+
+}

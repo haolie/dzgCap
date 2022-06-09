@@ -15,5 +15,5 @@ func ToDateStr(t time.Time) string {
 }
 
 func ToDateTimeStr(t time.Time) string {
-	return fmt.Sprintf("%s %s",ToDateStr(t),ToTimeStr(t))
+	return fmt.Sprintf("%s %s", ToDateStr(t), ToTimeStr(t))
 }
