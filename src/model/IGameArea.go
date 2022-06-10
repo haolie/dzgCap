@@ -17,14 +17,14 @@ type IGameArea interface {
 	// parameter:
 	//		@key: 区域key
 	// return:
-	ClickRectKey(key string)
+	ClickRectKey(key string, checkKey string) bool
 
 	// ClickPointKey
 	// @description: 点击
 	// parameter:
 	//		@key: key
 	// return:
-	ClickPointKey(key string)
+	ClickPointKey(key string, checkKey string) bool
 
 	// ClickPoint
 	// @description: 点击指定位置
@@ -32,7 +32,7 @@ type IGameArea interface {
 	//		@x: x
 	//		@y: y
 	// return:
-	ClickPoint(x, y int)
+	ClickPoint(x, y int, checkKey string) bool
 
 	// VerifyRect
 	// @description: 界面区域验证
@@ -65,4 +65,10 @@ type IGameArea interface {
 	//		@status:
 	//		@taskType:
 	GetStatus() (status TaskStatusEnum, taskType TaskEnum)
+
+	ToHome() error
+
+	IsHome() bool
+
+	GoBack()
 }

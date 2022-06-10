@@ -38,7 +38,7 @@ func SaveImage(areaModel string, taskType int32, key string) {
 
 }
 
-func VerifyRect(areaModel string, taskType int32, key string) bool {
+func VerifyRect(areaModel string, taskType int32, key string, mx, my int) bool {
 
 	return false
 }

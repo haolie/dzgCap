@@ -5,6 +5,6 @@ import (
 )
 
 type areaModel struct {
-	rectMap  map[string]model.Rect
-	pointMap map[string]model.Point
+	RectMap  map[string]model.Rect
+	PointMap map[string]model.Point
 }
