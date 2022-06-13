@@ -1,21 +1,40 @@
 package ConfigManger
 
 import (
+	"context"
+
 	"github.com/spf13/viper"
+
+	"dzgCap/dzgCap"
 )
 
 var (
-	configObj *Config
-	isLoad    bool
+	configObj  *Config
+	isLoad     bool
+	moduleName = "configManger"
 )
 
 type Config struct {
 	ScreenModel       string
 	HSPort            int
 	MeetingRewardTime int
+	ConfigPath        string
 }
 
-func Load(path string) error {
+func init() {
+	dzgCap.RegisterLoad(moduleName, loadHandler)
+}
+
+func loadHandler(ctx context.Context) (errList []error) {
+	err := load("")
+	if err != nil {
+		errList = append(errList, err)
+	}
+
+	return
+}
+
+func load(path string) error {
 	if isLoad {
 		return nil
 	}
@@ -38,6 +57,10 @@ func Load(path string) error {
 
 	isLoad = true
 	return err
+}
+
+func GetConfigCopy() Config {
+	return *configObj
 }
 
 func GetScreenKey() string {

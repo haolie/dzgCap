@@ -1,7 +1,6 @@
 package gameAreaModel
 
 import (
-	"dzgCap/src/model"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -9,11 +8,13 @@ import (
 	"path"
 	"strconv"
 	"strings"
+
+	"dzgCap/src/model"
 )
 
 const (
-	oldPath = "E:\\haolie\\dzgCap\\config_1.2"
-	newPath = "E:/haolie/dzgCap/config_2.0"
+	oldPath = "../../config_b_1.1"
+	newPath = "../../config_b_2.0"
 )
 
 type OldPointModel struct {
@@ -42,16 +43,16 @@ func TransFile(key string) {
 		return
 	}
 
-	modelMap := make(map[int32]*areaModel, len(oldModleMap))
+	areaModelObj := &areaModel{TaskMap: make(map[int32]areaTaskModel, len(oldModleMap))}
 
 	for taskId, oldItem := range oldModleMap {
-		modelMap[taskId] = &areaModel{
+		taskModelObj := areaTaskModel{
 			RectMap:  make(map[string]model.Rect, len(oldItem.RectList)),
 			PointMap: make(map[string]model.Point, len(oldItem.PointList)),
 		}
 
 		for _, rectItem := range oldItem.RectList {
-			modelMap[taskId].RectMap[rectItem.Key] = model.Rect{
+			taskModelObj.RectMap[rectItem.Key] = model.Rect{
 				X: rectItem.X,
 				Y: rectItem.Y,
 				W: rectItem.W,
@@ -60,22 +61,16 @@ func TransFile(key string) {
 		}
 
 		for _, pointItem := range oldItem.PointList {
-			modelMap[taskId].PointMap[pointItem.Key] = model.Point{
+			taskModelObj.PointMap[pointItem.Key] = model.Point{
 				X: pointItem.X,
 				Y: pointItem.Y,
 			}
 		}
+
+		areaModelObj.TaskMap[taskId] = taskModelObj
 	}
 
-	type saveModel struct {
-		TaskMap map[int32]*areaModel
-	}
-
-	saveObj := saveModel{
-		TaskMap: modelMap,
-	}
-
-	data, err := json.Marshal(saveObj)
+	data, err := json.Marshal(areaModelObj)
 	if err != nil {
 		return
 	}

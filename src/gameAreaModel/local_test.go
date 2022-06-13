@@ -100,28 +100,8 @@ func TestSaveMain(t *testing.T) {
 }
 
 func TestGetModel(t *testing.T) {
-	//d, exists := GetTaskModel("Base", 1)
-	//if exists {
-	//	fmt.Println(*d)
-	//} else {
-	//	fmt.Println("load flaid")
-	//}
-
-	data, err := ioutil.ReadFile("test.json")
-	if err != nil {
-		return
-	}
-
-	var temp S1
-
-	err = json.Unmarshal(data, &temp)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Printf("%+v", temp)
-
+	modelMap, _ := loadAreaModel("../../config_b_2.0/")
+	fmt.Println(modelMap)
 }
 
 func TestVerifyModel(t *testing.T) {

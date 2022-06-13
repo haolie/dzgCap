@@ -3,6 +3,7 @@ package gameCenter
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"dzgCap/Loger"
 	"dzgCap/src/gameArea"
@@ -15,6 +16,7 @@ var (
 	areaList  []model.IGameArea
 	cancelFun context.CancelFunc
 	gTable    model.IGameTable = newGTable()
+	startOnce sync.Once
 )
 
 func ScanArea() error {
@@ -46,7 +48,7 @@ func ScanArea() error {
 	return nil
 }
 
-func StartWork(taskType model.TaskEnum) {
+func StartTask(taskType model.TaskEnum) {
 	ScanArea()
 
 	if len(areaList) == 0 {
@@ -64,6 +66,14 @@ func StartWork(taskType model.TaskEnum) {
 			Loger.LogErr(fmt.Sprintf("任务开始失败 err:%v", err))
 		}
 	}
+}
+
+func StartWork() error {
+	(&startOnce).Do(func() {
+
+	})
+
+	return nil
 }
 
 func Stop() {
