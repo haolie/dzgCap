@@ -40,7 +40,7 @@ type IGameArea interface {
 	//		@key: rect key
 	// return:
 	//		@bool: 验证是否通过
-	VerifyRect(key string) bool
+	VerifyRect(taskType TaskEnum, key string) bool
 
 	// StartTask
 	// @description:

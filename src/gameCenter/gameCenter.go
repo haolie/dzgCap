@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"dzgCap/Loger"
+	"dzgCap/dzgCap"
 	"dzgCap/src/gameArea"
 	"dzgCap/src/gameAreaModel"
 	"dzgCap/src/imageTool"
@@ -13,11 +14,25 @@ import (
 )
 
 var (
-	areaList  []model.IGameArea
-	cancelFun context.CancelFunc
-	gTable    model.IGameTable = newGTable()
-	startOnce sync.Once
+	areaList   []model.IGameArea
+	cancelFun  context.CancelFunc
+	gTable     model.IGameTable = newGTable()
+	startOnce  sync.Once
+	moduleName = "gameCenter"
 )
+
+func init() {
+	dzgCap.RegisterStart(moduleName, startHandler)
+}
+
+func startHandler(ctx context.Context) (errList []error) {
+	err := StartWork()
+	if err != nil {
+		errList = append(errList, err)
+	}
+
+	return
+}
 
 func ScanArea() error {
 	areaList = make([]model.IGameArea, 0, 4)
@@ -45,6 +60,8 @@ func ScanArea() error {
 		areaList = append(areaList, areaFactory(r))
 	}
 
+	Loger.LogInfo(fmt.Sprintf("find %d ScanArea", len(areaList)))
+
 	return nil
 }
 
@@ -70,7 +87,7 @@ func StartTask(taskType model.TaskEnum) {
 
 func StartWork() error {
 	(&startOnce).Do(func() {
-
+		ScanArea()
 	})
 
 	return nil
@@ -81,4 +98,20 @@ func Stop() {
 		cancelFun()
 		cancelFun = nil
 	}
+}
+
+func VerifyRect(taskType model.TaskEnum, key string) bool {
+	if len(areaList) == 0 {
+		return false
+	}
+
+	return areaList[0].VerifyRect(taskType, key)
+}
+
+func IsMainView() bool {
+	if len(areaList) == 0 {
+		return false
+	}
+
+	return areaList[0].IsHome()
 }

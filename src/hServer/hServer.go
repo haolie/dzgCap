@@ -1,16 +1,32 @@
 package hServer
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/kataras/iris/v12"
 
 	"dzgCap/ConfigManger"
+	"dzgCap/dzgCap"
 )
 
 var (
-	svMap = make(map[string]func(ctx iris.Context), 8)
+	svMap      = make(map[string]func(ctx iris.Context), 8)
+	moduleName = "hServer"
 )
+
+func init() {
+	dzgCap.RegisterStart(moduleName, startHandler)
+}
+
+func startHandler(ctx context.Context) (errList []error) {
+	err := StartHServer()
+	if err != nil {
+		errList = append(errList, err)
+	}
+
+	return
+}
 
 // 注册http接口
 func RegisterHSv(key string, fn func(ctx iris.Context)) {

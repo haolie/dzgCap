@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"image"
 	"io/ioutil"
 	"os"
 	"path"
@@ -11,10 +12,12 @@ import (
 	"dzgCap/ConfigManger"
 	"dzgCap/Loger"
 	"dzgCap/dzgCap"
+	"dzgCap/src/imageTool"
+	"dzgCap/src/model"
 )
 
 var (
-	modelMap   map[string]areaModel
+	modelMap   map[string]*areaModel
 	moduleName = "gameAreaModel"
 )
 
@@ -32,13 +35,13 @@ func loadHandler(ctx context.Context) (errList []error) {
 	return
 }
 
-func loadAreaModel(dirPath string) (modelMap map[string]areaModel, err error) {
+func loadAreaModel(dirPath string) (modelMap map[string]*areaModel, err error) {
 	dirList, err := ioutil.ReadDir(dirPath)
 	if err != nil {
 		return
 	}
 
-	modelMap = make(map[string]areaModel, len(dirList))
+	modelMap = make(map[string]*areaModel, len(dirList))
 	for _, d := range dirList {
 		modelKey := d.Name()
 
@@ -47,14 +50,14 @@ func loadAreaModel(dirPath string) (modelMap map[string]areaModel, err error) {
 			continue
 		}
 
-		modelMap[modelKey] = modelObj
+		modelMap[modelKey] = &modelObj
 	}
 
 	return
 }
 
+// 从本地文件中加载游戏模型
 func loadModel(filePath string) (modelObj areaModel, exists bool) {
-
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		Loger.LogErr(fmt.Sprintf("gameAreaModel.loadModel err:%v", err))
@@ -67,35 +70,60 @@ func loadModel(filePath string) (modelObj areaModel, exists bool) {
 	}
 
 	exists = true
+	if modelObj.TaskMap == nil {
+		modelObj.TaskMap = make(map[int32]*areaTaskModel, 4)
+	}
+
+	//
+	for taskId := range modelObj.TaskMap {
+		if modelObj.TaskMap[taskId].PointMap == nil {
+			modelObj.TaskMap[taskId].PointMap = make(map[string]model.Point, 4)
+		}
+
+		if modelObj.TaskMap[taskId].RectMap == nil {
+			modelObj.TaskMap[taskId].RectMap = make(map[string]model.Rect, 4)
+		}
+
+		if modelObj.TaskMap[taskId].imgMap == nil {
+			modelObj.TaskMap[taskId].imgMap = make(map[string]image.Image, 4)
+		}
+	}
 
 	return
 }
 
-func saveAreaModel(modelObj areaModel, key, savePath string) {
-	data, err := json.Marshal(&modelObj)
+// saveAreaModel
+// @description: 保存游戏区域模型
+// parameter:
+//		@modelObj:
+//		@savePath:
+// return:
+//		@error:
+func saveAreaModel(modelObj *areaModel, savePath string) error {
+	data, err := json.Marshal(modelObj)
 	if err != nil {
 		panic(err)
 	}
 
-	savePath = path.Join(savePath, key)
 	_, err = os.Stat(savePath)
 	if err != nil {
 		err = os.MkdirAll(savePath, os.ModePerm)
-		panic(err)
+		if err != nil {
+			return err
+		}
 	}
 
-	err = ioutil.WriteFile(path.Join(savePath, key+".json"), data, 0666)
-	if err != nil {
-		fmt.Println(err)
-	}
+	return ioutil.WriteFile(path.Join(savePath, modelObj.Key+".json"), data, 0666)
 }
 
-func getAreaModel(key string) (am areaModel, exists bool) {
+// 返回游戏区域模型
+func getAreaModel(key string) (am *areaModel, exists bool) {
 	am, exists = modelMap[key]
 	return
 }
 
-func getAreaTaskModel(key string, taskType int32) (modelObj areaTaskModel, exists bool) {
+// 返回任务模型
+func getAreaTaskModel(key string, taskType int32) (modelObj *areaTaskModel, exists bool) {
 	rm, exists := getAreaModel(key)
 	if !exists {
 		return
@@ -103,4 +131,33 @@ func getAreaTaskModel(key string, taskType int32) (modelObj areaTaskModel, exist
 
 	modelObj, exists = rm.TaskMap[taskType]
 	return
+}
+
+// 返回游戏区域保存路径
+func getAreaModelPath(key string) string {
+	return path.Join(ConfigManger.GetConfigCopy().ConfigPath, key)
+}
+
+func loadImg(areaKey string, taskId int32, key string) (img image.Image, exists bool) {
+	fileName := path.Join(getAreaModelPath(areaKey), fmt.Sprintf("%d", taskId), "pic", key+".png")
+	img, err := imageTool.LoadImage(fileName)
+	if err != nil {
+		return
+	}
+
+	exists = true
+	return
+}
+
+func saveImg(areaKey string, taskId int32, key string, img image.Image) error {
+	savePath := path.Join(getAreaModelPath(areaKey), fmt.Sprintf("%d", taskId), "pic")
+	_, err := os.Stat(savePath)
+	if err != nil {
+		err = os.MkdirAll(savePath, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
+	return imageTool.SaveImage(img, path.Join(savePath, key+".png"))
 }

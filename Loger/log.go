@@ -12,5 +12,5 @@ func LogInfo(info string) {
 }
 
 func LogErr(err string) {
-
+	LogInfo(err)
 }

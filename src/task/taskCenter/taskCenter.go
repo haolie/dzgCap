@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	createrMap map[TaskEnum]func(ga IGameArea) ITask
+	createrMap = make(map[TaskEnum]func(ga IGameArea) ITask, 4)
 )
 
 func RegisterTask(taskType TaskEnum, creater func(ga IGameArea) ITask) {

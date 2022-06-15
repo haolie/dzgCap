@@ -33,10 +33,12 @@ func newGTable() *gt {
 
 func (g *gt) Click(x, y int) {
 	g.clickOnce.Do(func() {
-		for m := range g.ch {
-			robotgo.MoveClick(m.x, m.y)
-			close(m.fch)
-		}
+		go func() {
+			for m := range g.ch {
+				robotgo.MoveClick(m.x, m.y)
+				close(m.fch)
+			}
+		}()
 	})
 
 	cm := newClickModel(x, y)

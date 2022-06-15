@@ -38,14 +38,14 @@ type OldSaveModel struct {
 }
 
 func TransFile(key string) {
-	oldModleMap, exists := getScreenAreaFromLocal(key)
+	oldModelMap, exists := getScreenAreaFromLocal(key)
 	if !exists {
 		return
 	}
 
-	areaModelObj := &areaModel{TaskMap: make(map[int32]areaTaskModel, len(oldModleMap))}
+	areaModelObj := &areaModel{Key: key, TaskMap: make(map[int32]*areaTaskModel, len(oldModelMap))}
 
-	for taskId, oldItem := range oldModleMap {
+	for taskId, oldItem := range oldModelMap {
 		taskModelObj := areaTaskModel{
 			RectMap:  make(map[string]model.Rect, len(oldItem.RectList)),
 			PointMap: make(map[string]model.Point, len(oldItem.PointList)),
@@ -67,7 +67,7 @@ func TransFile(key string) {
 			}
 		}
 
-		areaModelObj.TaskMap[taskId] = taskModelObj
+		areaModelObj.TaskMap[taskId] = &taskModelObj
 	}
 
 	data, err := json.Marshal(areaModelObj)

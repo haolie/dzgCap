@@ -50,8 +50,8 @@ func (ga *GameArea) ClickPoint(x, y int, checkKey string) bool {
 	return ga.clickVerify(checkKey)
 }
 
-func (ga *GameArea) VerifyRect(key string) bool {
-	return ga.verifyRect(ga.task.GetTaskType(), key)
+func (ga *GameArea) VerifyRect(taskType TaskEnum, key string) bool {
+	return ga.verifyRect(taskType, key)
 }
 
 func (ga *GameArea) StartTask(ctx context.Context, taskType TaskEnum) error {
@@ -209,7 +209,7 @@ func (ga *GameArea) clickVerify(rectKey string) bool {
 	}
 
 	for i := 0; i <= 7; i++ {
-		if ga.VerifyRect(rectKey) {
+		if ga.VerifyRect(ga.task.GetTaskType(), rectKey) {
 			return true
 		}
 

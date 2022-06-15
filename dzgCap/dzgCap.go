@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"dzgCap/Loger"
-	_ "dzgCap/src"
 )
 
 type RegisterFun func(ctx context.Context) []error

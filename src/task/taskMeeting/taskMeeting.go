@@ -99,8 +99,8 @@ func (m *meeting) Stop() {
 
 // 异步宴会
 func (m *meeting) doMeetingTask(ctx context.Context) {
-	timeCh := time.After(500)
-	drawCh := time.After(2000)
+	timeCh := time.After(5000 * time.Millisecond)
+	drawCh := time.After(2000 * time.Millisecond)
 
 	for {
 		select {
@@ -122,7 +122,10 @@ func (m *meeting) doMeetingTask(ctx context.Context) {
 
 func (m *meeting) joinMeeting() {
 	if !m.isMeetingJoinView() {
-		m.gArea.GoBack()
+		if !m.gArea.IsHome() {
+			m.gArea.GoBack()
+		}
+
 		return
 	}
 
@@ -147,7 +150,7 @@ func (m *meeting) joinMeeting() {
 
 // 判断是否是宴会界面
 func (m *meeting) isMeetingJoinView() bool {
-	return m.gArea.VerifyRect(Sys_Key_Rect_Meeting_Join_Btn)
+	return m.gArea.VerifyRect(m.GetTaskType(), Sys_Key_Rect_Meeting_Join_Btn)
 }
 
 func (m *meeting) drawMeetingReward() {
@@ -311,20 +314,20 @@ func (m *meeting) rewardDrawFn() {
 
 // 判断是否是宴会列表界面
 func (m *meeting) isMeetingList() bool {
-	return m.gArea.VerifyRect(Sys_key_rect_Meeting_List)
+	return m.gArea.VerifyRect(m.GetTaskType(), Sys_key_rect_Meeting_List)
 }
 
 // 判断是否是宴会界面
 func (m *meeting) isMeeting() bool {
-	if m.gArea.VerifyRect(Sys_key_rect_Meeting_SiWangYan) {
+	if m.gArea.VerifyRect(m.GetTaskType(), Sys_key_rect_Meeting_SiWangYan) {
 		return true
 	}
 
-	if m.gArea.VerifyRect(Sys_key_rect_Meeting_QinWangYan) {
+	if m.gArea.VerifyRect(m.GetTaskType(), Sys_key_rect_Meeting_QinWangYan) {
 		return true
 	}
 
-	if m.gArea.VerifyRect(Sys_key_rect_Meeting_JunWangYan) {
+	if m.gArea.VerifyRect(m.GetTaskType(), Sys_key_rect_Meeting_JunWangYan) {
 		return true
 	}
 
