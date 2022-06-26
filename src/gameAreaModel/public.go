@@ -15,7 +15,7 @@ func GetModelKeyWithRect(r Rect) (modelKey string, exists bool) {
 			continue
 		}
 
-		if mod.TaskMap[0].RectMap[Sys_Key_Rect_Game] == r {
+		if mod.TaskMap[0].RectMap[Sys_Key_Rect_Game].W == r.W &&mod.TaskMap[0].RectMap[Sys_Key_Rect_Game].H == r.H{
 			return k, true
 		}
 	}

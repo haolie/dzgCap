@@ -1,11 +1,13 @@
-package task
+package taskClick
 
 import (
 	"context"
+	"fmt"
 	"image"
 	"sync/atomic"
 	"time"
 
+	"dzgCap/Loger"
 	. "dzgCap/src/model"
 	"dzgCap/src/task/taskCenter"
 )
@@ -17,7 +19,7 @@ const (
 	con_max_errBack_times = 10
 	// icon寻找 等待时间
 	con_find_icon_wait = time.Minute * 10
-	con_click_times    = 20
+	con_click_times    = 180
 )
 
 func init() {
@@ -107,9 +109,10 @@ func (m *clickTask) doMeetingTask(ctx context.Context) {
 			if num > con_click_times {
 				m.Stop()
 			}
-			m.gArea.ClickPointKey(Sys_key_Point_clickTask, "")
+			Loger.LogInfo(fmt.Sprintf("click num:%d \n",num))
+			 m.gArea.ClickPointKey(Sys_key_Point_clickTask, "")
 			num++
-			timeCh = time.After(500)
+			timeCh = time.After(con_click_span)
 		}
 	}
 }

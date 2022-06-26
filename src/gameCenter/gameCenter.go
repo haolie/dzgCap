@@ -43,6 +43,10 @@ func ScanArea() error {
 		return nil
 	}
 
+	if r, ex := imageTool.FindMinRect(img, model.GetLDColor()); ex {
+		fmt.Println(r)
+	}
+
 	var modelKey string
 	var areaFactory func(r model.Rect) model.IGameArea
 
@@ -103,6 +107,10 @@ func Stop() {
 func VerifyRect(taskType model.TaskEnum, key string) bool {
 	if len(areaList) == 0 {
 		return false
+	}
+
+	if key == model.Sys_Key_Rect_Main_Check {
+		return IsMainView()
 	}
 
 	return areaList[0].VerifyRect(taskType, key)

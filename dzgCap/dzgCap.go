@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"dzgCap/ConfigManger"
 	"dzgCap/Loger"
 )
 
@@ -33,9 +34,17 @@ func RegisterStart(key string, fn RegisterFun) {
 }
 
 func Start() {
+
+
 	mainCtx, existsFn = context.WithCancel(context.Background())
 
-	errList := load(mainCtx)
+	errList :=ConfigManger.LoadHandler(mainCtx)
+	if len(errList) > 0 {
+		printErrList(errList)
+		panic("load fail")
+	}
+
+	errList = load(mainCtx)
 	if len(errList) > 0 {
 		printErrList(errList)
 		panic("load fail")

@@ -100,7 +100,7 @@ func (m *meeting) Stop() {
 // 异步宴会
 func (m *meeting) doMeetingTask(ctx context.Context) {
 	timeCh := time.After(5000 * time.Millisecond)
-	drawCh := time.After(2000 * time.Millisecond)
+	drawCh := time.After(20 * time.Millisecond)
 
 	for {
 		select {
@@ -108,7 +108,7 @@ func (m *meeting) doMeetingTask(ctx context.Context) {
 			return
 		case <-timeCh:
 			m.joinMeeting()
-			timeCh = time.After(500)
+			timeCh = time.After(300* time.Millisecond)
 		case <-drawCh:
 			if ConfigManger.GetMeetingRewardTime() <= 0 {
 				break
@@ -131,7 +131,16 @@ func (m *meeting) joinMeeting() {
 
 	// 点击要求按钮
 	m.gArea.ClickRectKey(Sys_Key_Rect_Meeting_Join_Btn, "")
-	robotgo.MilliSleep(800)
+
+	for i:=0;i<8;i++{
+		if m.isMeetingJoinView(){
+			break
+		}
+
+		robotgo.MilliSleep(100)
+	}
+
+	robotgo.MilliSleep(400)
 
 	// 宴会要求已过期 todo
 	if m.isMeetingJoinView() {
@@ -236,7 +245,7 @@ func (m *meeting) findMeetingIcon() bool {
 		return false
 	}
 
-	m.lastBackClickTime = time.Now()
+	m.lastIconMissTime = time.Now()
 
 	// 返回主页面
 	if m.gArea.ToHome() != nil {
@@ -255,7 +264,7 @@ func (m *meeting) findMeetingIcon() bool {
 	}
 
 	// icon 点位
-	p, exists := gameAreaModel.GetRect(m.gArea.GetKey(), 0, Syc_Key_Point_Icon_Line)
+	p, exists := gameAreaModel.GetPoint(m.gArea.GetKey(), 0, Syc_Key_Point_Icon_Line)
 	if !exists {
 		return false
 	}
@@ -340,6 +349,6 @@ func (m *meeting) grab() bool {
 		return false
 	}
 
-	m.lastBackClickTime = time.Now().Add(-con_find_icon_wait * 2)
+	m.lastIconMissTime = time.Now().Add(-con_find_icon_wait * 2)
 	return true
 }

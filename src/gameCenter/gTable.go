@@ -2,6 +2,7 @@ package gameCenter
 
 import (
 	"sync"
+	"time"
 
 	"github.com/go-vgo/robotgo"
 )
@@ -36,6 +37,7 @@ func (g *gt) Click(x, y int) {
 		go func() {
 			for m := range g.ch {
 				robotgo.MoveClick(m.x, m.y)
+				time.Sleep(time.Millisecond*20)
 				close(m.fch)
 			}
 		}()

@@ -55,21 +55,26 @@ func (ga *GameArea) VerifyRect(taskType TaskEnum, key string) bool {
 }
 
 func (ga *GameArea) StartTask(ctx context.Context, taskType TaskEnum) error {
-	// 停止当前任务
-	ga.Stop()
 
-	// 返回主页面
-	ga.clickBack(con_Start_Back_Count)
+	if taskType == TaskEnum_Meeting {
+		// 停止当前任务
+		ga.Stop()
 
-	// 获取主页标识图片
-	{
-		r, exists := gameAreaModel.GetRect(ga.gameModelKey, 0, Sys_Key_Rect_Main_Check)
-		if !exists {
-			panic("can not find rect:" + Sys_Key_Point_Back)
+		// 返回主页面
+		ga.clickBack(con_Start_Back_Count, func() bool {
+			return false
+		})
+
+		// 获取主页标识图片
+		{
+			r, exists := gameAreaModel.GetRect(ga.gameModelKey, 0, Sys_Key_Rect_Main_Check)
+			if !exists {
+				panic("can not find rect:" + Sys_Key_Point_Back)
+			}
+
+			r = r.Move(ga.getMove())
+			ga.homeImg = imageTool.CapScreen(r)
 		}
-
-		r = r.Move(ga.getMove())
-		ga.homeImg = imageTool.CapScreen(r)
 	}
 
 	// 创建并开始任务
@@ -101,7 +106,10 @@ func (ga *GameArea) ToHome() error {
 		return nil
 	}
 
-	ga.clickBack(con_Start_Back_Count)
+	ga.clickBack(con_Start_Back_Count, func() bool {
+		return !ga.IsHome()
+	})
+
 	if ga.IsHome() {
 		return nil
 	}
@@ -114,7 +122,9 @@ func (ga *GameArea) ToHome() error {
 		time.Sleep(Sys_Con_jump_Waite)
 	}
 
-	ga.clickBack(con_Start_Back_Count)
+	ga.clickBack(con_Start_Back_Count, func() bool {
+		return !ga.IsHome()
+	})
 	if ga.IsHome() {
 		return nil
 	}
@@ -125,7 +135,9 @@ func (ga *GameArea) ToHome() error {
 		time.Sleep(Sys_Con_jump_Waite)
 	}
 
-	ga.clickBack(con_Start_Back_Count)
+	ga.clickBack(con_Start_Back_Count, func() bool {
+		return !ga.IsHome()
+	})
 	if ga.IsHome() {
 		return nil
 	}
@@ -134,6 +146,10 @@ func (ga *GameArea) ToHome() error {
 }
 
 func (ga *GameArea) IsHome() bool {
+	if ga.homeImg == nil {
+		return false
+	}
+
 	r, exists := gameAreaModel.GetRect(ga.gameModelKey, 0, Sys_Key_Rect_Main_Check)
 	if !exists {
 		return false
@@ -146,7 +162,9 @@ func (ga *GameArea) IsHome() bool {
 }
 
 func (ga *GameArea) GoBack() {
-	ga.clickBack(1)
+	ga.clickBack(1, func() bool {
+		return false
+	})
 }
 
 func (ga *GameArea) goHome() {
@@ -158,10 +176,13 @@ func (ga *GameArea) goHome() {
 	ga.click(p.X, p.Y)
 }
 
-func (ga *GameArea) clickBack(num int) {
+func (ga *GameArea) clickBack(num int, checkFun func() bool) {
 	for i := 0; i < num; i++ {
 		ga.goHome()
-		time.Sleep(800 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
+		if !checkFun() {
+			break
+		}
 	}
 }
 

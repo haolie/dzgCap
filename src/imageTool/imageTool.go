@@ -20,7 +20,7 @@ const (
 func LoadImage(name string) (img image.Image, err error) {
 	f, err := os.Open(name)
 	if err != nil {
-		panic(err)
+		return
 	}
 	defer f.Close()
 

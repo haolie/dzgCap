@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/spf13/viper"
-
-	"dzgCap/dzgCap"
 )
 
 var (
@@ -22,10 +20,9 @@ type Config struct {
 }
 
 func init() {
-	dzgCap.RegisterLoad(moduleName, loadHandler)
 }
 
-func loadHandler(ctx context.Context) (errList []error) {
+func LoadHandler(ctx context.Context) (errList []error) {
 	err := load("")
 	if err != nil {
 		errList = append(errList, err)
