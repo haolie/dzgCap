@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	oldPath = "../../config_b_1.1"
+	oldPath = "../../config"
 	newPath = "../../config_b_2.0"
 )
 
@@ -76,18 +76,19 @@ func TransFile(key string) {
 	}
 
 	savePath := path.Join(newPath, key)
-	_, err = os.Stat(savePath)
+	err = os.MkdirAll(savePath, os.ModePerm)
 	if err != nil {
-		err = os.MkdirAll(savePath, os.ModePerm)
-		if err != nil {
-			panic(err)
-		}
+		panic(err)
 	}
 
 	err = ioutil.WriteFile(path.Join(savePath, key+".json"), data, 0666)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	// copy img
+
+
 
 }
 
