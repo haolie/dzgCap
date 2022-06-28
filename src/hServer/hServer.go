@@ -44,7 +44,7 @@ func RegisterHSv(key string, fn func(ctx iris.Context)) {
 //		@error:
 func StartHServer() error {
 	app := iris.New()
-	app.StaticContent()
+
 	app.RegisterView(iris.HTML("./view", ".html").Reload(true))
 	app.Get("/view", func(context iris.Context) {
 
