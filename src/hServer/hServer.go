@@ -44,6 +44,13 @@ func RegisterHSv(key string, fn func(ctx iris.Context)) {
 //		@error:
 func StartHServer() error {
 	app := iris.New()
+	app.StaticContent()
+	app.RegisterView(iris.HTML("./view", ".html").Reload(true))
+	app.Get("/view", func(context iris.Context) {
+
+		context.ViewData("context","正文")
+		context.View("index.html")
+	})
 
 	for key, fn := range svMap {
 		app.Get("/w/"+key, fn)

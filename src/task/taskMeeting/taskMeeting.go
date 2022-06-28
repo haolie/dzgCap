@@ -108,7 +108,7 @@ func (m *meeting) doMeetingTask(ctx context.Context) {
 			return
 		case <-timeCh:
 			m.joinMeeting()
-			timeCh = time.After(300* time.Millisecond)
+			timeCh = time.After(300 * time.Millisecond)
 		case <-drawCh:
 			if ConfigManger.GetMeetingRewardTime() <= 0 {
 				break
@@ -123,6 +123,19 @@ func (m *meeting) doMeetingTask(ctx context.Context) {
 func (m *meeting) joinMeeting() {
 	if !m.isMeetingJoinView() {
 		if !m.gArea.IsHome() {
+			// 离上次点击超过一秒 重置点击次数
+			if time.Now().Sub(m.lastBackClickTime) > time.Second {
+				m.clickTimes = 0
+			}
+
+			m.lastBackClickTime = time.Now()
+			m.clickTimes += 1
+
+			if m.clickTimes > 7 {
+				m.gArea.ToHome()
+				return
+			}
+
 			m.gArea.GoBack()
 		}
 
@@ -132,18 +145,22 @@ func (m *meeting) joinMeeting() {
 	// 点击要求按钮
 	m.gArea.ClickRectKey(Sys_Key_Rect_Meeting_Join_Btn, "")
 
-	for i:=0;i<8;i++{
-		if m.isMeetingJoinView(){
+	var isMeetView bool
+	// 等待界面跳转至宴会
+	for i := 0; i < 10; i++ {
+		if !m.isMeetingJoinView() {
+			// 跳转成功
+			isMeetView = true
 			break
 		}
 
 		robotgo.MilliSleep(100)
 	}
 
-	robotgo.MilliSleep(400)
+	robotgo.MilliSleep(200)
 
 	// 宴会要求已过期 todo
-	if m.isMeetingJoinView() {
+	if !isMeetView {
 		m.gArea.ClickPointKey(Syc_Key_Point_Meeting_Sure, "")
 		return
 	}
@@ -230,11 +247,11 @@ func (m *meeting) drawMeetingReward() {
 
 			break
 		}
+	}
 
-		// 返回主页面
-		if m.gArea.ToHome() != nil {
-			panic(fmt.Errorf("screen err"))
-		}
+	// 返回主页面
+	if m.gArea.ToHome() != nil {
+		panic(fmt.Errorf("screen err"))
 	}
 }
 
