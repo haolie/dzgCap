@@ -1,4 +1,4 @@
-package hServer
+package common
 
 import (
 	"time"
@@ -29,7 +29,7 @@ func baseDataMap() map[string]interface{} {
 	return dataMap
 }
 
-func createErrHSResponse(errInfo string) map[string]interface{} {
+func CreateErrHSResponse(errInfo string) map[string]interface{} {
 	dataMap := baseDataMap()
 	dataMap["status"] = Con_HS_Status_Fail
 	dataMap["content"] = errInfo
@@ -37,7 +37,7 @@ func createErrHSResponse(errInfo string) map[string]interface{} {
 	return dataMap
 }
 
-func createSuccessHSResponse(info interface{}) map[string]interface{} {
+func CreateSuccessHSResponse(info interface{}) map[string]interface{} {
 
 	dataMap := baseDataMap()
 	dataMap["status"] = Con_HS_Status_Success

@@ -180,6 +180,10 @@ func (ga *GameArea) clickBack(num int, checkFun func() bool) {
 	for i := 0; i < num; i++ {
 		ga.goHome()
 		time.Sleep(500 * time.Millisecond)
+		if checkFun == nil {
+			continue
+		}
+
 		if !checkFun() {
 			break
 		}

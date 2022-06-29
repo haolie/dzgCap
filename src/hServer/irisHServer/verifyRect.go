@@ -5,7 +5,7 @@
 // @revision history:
 // @create date: 2022-04-22 11:33:44
 // ************************************
-package hServer
+package irisHServer
 
 import (
 	"fmt"
@@ -13,6 +13,7 @@ import (
 	"github.com/kataras/iris/v12"
 
 	"dzgCap/src/gameCenter"
+	"dzgCap/src/hServer/common"
 	"dzgCap/src/model"
 )
 
@@ -23,17 +24,17 @@ func init() {
 func verifyRect(ctx iris.Context) {
 	name := "verifyRect"
 
-	taskId32, err := ctx.URLParamInt(con_Params_TaskType)
+	taskId32, err := ctx.URLParamInt(common.Con_Params_TaskType)
 	if err != nil {
-		commonHandler(name, ctx, fmt.Errorf("need taskId"))
+		common.CommonHandler(name, ctx, fmt.Errorf("need taskId"))
 		return
 	}
 
 	taskId := int32(taskId32)
 
-	rk := ctx.URLParam(con_Params_Key)
+	rk := ctx.URLParam(common.Con_Params_Key)
 	if len(rk) == 0 {
-		commonHandler(name, ctx, fmt.Errorf("need rect"))
+		common.CommonHandler(name, ctx, fmt.Errorf("need rect"))
 		return
 	}
 
@@ -42,5 +43,5 @@ func verifyRect(ctx iris.Context) {
 		err = fmt.Errorf("verify Fail")
 	}
 
-	commonHandler(name, ctx, err)
+	common.CommonHandler(name, ctx, err)
 }

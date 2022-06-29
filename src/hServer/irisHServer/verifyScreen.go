@@ -5,7 +5,7 @@
 // @revision history:
 // @create date: 2022-04-22 11:34:22
 // ************************************
-package hServer
+package irisHServer
 
 import (
 	"github.com/kataras/iris/v12"

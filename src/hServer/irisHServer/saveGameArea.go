@@ -1,4 +1,4 @@
-package hServer
+package irisHServer
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 
 	"dzgCap/src/gameAreaModel"
 	"dzgCap/src/gameCenter"
+	"dzgCap/src/hServer/common"
 	"dzgCap/src/imageTool"
 )
 
@@ -18,10 +19,10 @@ func init() {
 func saveArea(ctx iris.Context) {
 	name := "saveArea"
 
-	sKey := ctx.URLParam(con_Params_AreaKey)
+	sKey := ctx.URLParam(common.Con_Params_AreaKey)
 	if len(sKey) == 0 {
 		err := fmt.Errorf("need areaKey")
-		commonHandler(name, ctx, err)
+		common.CommonHandler(name, ctx, err)
 		return
 	}
 
@@ -35,13 +36,13 @@ func saveArea(ctx iris.Context) {
 
 	if !exists {
 		err := fmt.Errorf("not find game in screen")
-		commonHandler(name, ctx, err)
+		common.CommonHandler(name, ctx, err)
 		return
 	}
 
 	gameCenter.ScanArea()
 
-	commonHandler(name, ctx, gameAreaModel.SaveAreaModel(sKey, r))
+	common.CommonHandler(name, ctx, gameAreaModel.SaveAreaModel(sKey, r))
 
 	return
 }

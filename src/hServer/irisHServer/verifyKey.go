@@ -5,7 +5,7 @@
 // @revision history:
 // @create date: 2022-04-22 11:33:44
 // ************************************
-package hServer
+package irisHServer
 
 import (
 	"fmt"
@@ -13,6 +13,7 @@ import (
 	"github.com/kataras/iris/v12"
 
 	"dzgCap/src/gameAreaModel"
+	"dzgCap/src/hServer/common"
 )
 
 func init() {
@@ -21,7 +22,7 @@ func init() {
 
 func verifyKey(ctx iris.Context) {
 	name := "taskCtl"
-	taskId32, err := ctx.URLParamInt(con_Params_TaskType)
+	taskId32, err := ctx.URLParamInt(common.Con_Params_TaskType)
 	if err != nil {
 		ctx.WriteString("need taskId")
 		return
@@ -29,29 +30,29 @@ func verifyKey(ctx iris.Context) {
 
 	taskId := int32(taskId32)
 
-	sKey := ctx.URLParam(con_Params_AreaKey)
+	sKey := ctx.URLParam(common.Con_Params_AreaKey)
 	if len(sKey) == 0 {
-		commonHandler(name, ctx, fmt.Errorf("need screen key"))
+		common.CommonHandler(name, ctx, fmt.Errorf("need screen key"))
 		return
 	}
 
-	rk := ctx.URLParam(con_Params_Key)
+	rk := ctx.URLParam(common.Con_Params_Key)
 	if len(rk) == 0 {
-		commonHandler(name, ctx, fmt.Errorf("need rect key"))
+		common.CommonHandler(name, ctx, fmt.Errorf("need rect key"))
 		return
 	}
 
 	r, exists := gameAreaModel.GetRect(sKey, taskId, rk)
 	if exists {
-		ctx.JSON(createSuccessHSResponse(fmt.Sprintf("key:%s, rect: %v", rk, r)))
+		ctx.JSON(common.CreateSuccessHSResponse(fmt.Sprintf("key:%s, rect: %v", rk, r)))
 		return
 	}
 
 	p, exists := gameAreaModel.GetPoint(sKey, taskId, rk)
 	if exists {
-		ctx.JSON(createSuccessHSResponse(fmt.Sprintf("point:%s, rect: %v", rk, p)))
+		ctx.JSON(common.CreateSuccessHSResponse(fmt.Sprintf("point:%s, rect: %v", rk, p)))
 		return
 	}
 
-	commonHandler(name, ctx, fmt.Errorf("key:%s not find", rk))
+	common.CommonHandler(name, ctx, fmt.Errorf("key:%s not find", rk))
 }

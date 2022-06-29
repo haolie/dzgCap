@@ -1,4 +1,4 @@
-package hServer
+package irisHServer
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris/v12"
 
 	"dzgCap/src/gameAreaModel"
+	"dzgCap/src/hServer/common"
 )
 
 func init() {
@@ -15,31 +16,31 @@ func init() {
 func saveImage(ctx iris.Context) {
 	name := "saveImage"
 
-	sKey := ctx.URLParam(con_Params_AreaKey)
+	sKey := ctx.URLParam(common.Con_Params_AreaKey)
 	if len(sKey) == 0 {
 		err := fmt.Errorf("need areaKey")
-		commonHandler(name, ctx, err)
+		common.CommonHandler(name, ctx, err)
 		return
 	}
 
-	rKey := ctx.URLParam(con_Params_Key)
+	rKey := ctx.URLParam(common.Con_Params_Key)
 	if len(rKey) == 0 {
 		err := fmt.Errorf("need rect key")
-		commonHandler(name, ctx, err)
+		common.CommonHandler(name, ctx, err)
 		return
 	}
 
-	taskId32, err := ctx.URLParamInt(con_Params_TaskType)
+	taskId32, err := ctx.URLParamInt(common.Con_Params_TaskType)
 	if err != nil {
 		err := fmt.Errorf("need taskType")
-		commonHandler(name, ctx, err)
+		common.CommonHandler(name, ctx, err)
 		return
 	}
 
 	taskId := int32(taskId32)
 
 	err = gameAreaModel.SaveImage(sKey, taskId, rKey)
-	commonHandler(name, ctx, err)
+	common.CommonHandler(name, ctx, err)
 
 	return
 }

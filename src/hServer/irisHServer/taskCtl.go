@@ -5,7 +5,7 @@
 // @revision history:
 // @create date: 2022-04-22 11:33:44
 // ************************************
-package hServer
+package irisHServer
 
 import (
 	"fmt"
@@ -14,6 +14,7 @@ import (
 	"github.com/kataras/iris/v12"
 
 	"dzgCap/src/gameCenter"
+	"dzgCap/src/hServer/common"
 	"dzgCap/src/model"
 )
 
@@ -23,7 +24,7 @@ func init() {
 
 func taskCtl(ctx iris.Context) {
 	name := "taskCtl"
-	taskId32, err := ctx.URLParamInt(con_Params_TaskType)
+	taskId32, err := ctx.URLParamInt(common.Con_Params_TaskType)
 	if err != nil {
 		ctx.WriteString("need taskId")
 		return
@@ -31,7 +32,7 @@ func taskCtl(ctx iris.Context) {
 
 	taskId := int32(taskId32)
 
-	cmd := ctx.URLParam(con_Params_Cmd)
+	cmd := ctx.URLParam(common.Con_Params_Cmd)
 	if len(cmd) == 0 {
 		ctx.WriteString("need cmd")
 		return
@@ -39,10 +40,10 @@ func taskCtl(ctx iris.Context) {
 
 	if cmd == "start" {
 		gameCenter.StartTask(model.TaskEnum(taskId))
-		commonHandler(name, ctx, nil)
+		common.CommonHandler(name, ctx, nil)
 	} else {
 		gameCenter.Stop()
-		commonHandler(name, ctx, nil)
+		common.CommonHandler(name, ctx, nil)
 	}
 
 	ctx.WriteString(fmt.Sprintf("%v, success", time.Now()))

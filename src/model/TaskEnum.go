@@ -14,7 +14,7 @@ var taskEnumMap = map[TaskEnum]string{
 	TaskEnum_Click:     "点击",
 }
 
-func TaskEnumVerify(taskEnum TaskEnum) bool {
-	_, exists := taskEnumMap[taskEnum]
+func TaskEnumVerify(taskEnum int32) bool {
+	_, exists := taskEnumMap[TaskEnum(taskEnum)]
 	return exists
 }

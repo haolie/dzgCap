@@ -5,11 +5,12 @@
 // @revision history:
 // @create date: 2022-04-22 11:33:44
 // ************************************
-package hServer
+package irisHServer
 
 import (
 	"github.com/kataras/iris/v12"
 
+	"dzgCap/src/hServer/common"
 	"dzgCap/src/model"
 )
 
@@ -20,7 +21,7 @@ func init() {
 func keyList(ctx iris.Context) {
 	//name := "keyList"
 
-	dataMap := createSuccessHSResponse("")
+	dataMap := common.CreateSuccessHSResponse("")
 	dataMap["keyList"] = model.GetKeyMap()
-	ctx.JSON(createSuccessHSResponse(dataMap))
+	ctx.JSON(common.CreateSuccessHSResponse(dataMap))
 }
