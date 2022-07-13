@@ -11,13 +11,6 @@ const (
 	Con_HS_Status_Success = 200
 )
 
-type HSResponse struct {
-	status  int
-	content interface{}
-	time    int64
-	timeStr string
-}
-
 func baseDataMap() map[string]interface{} {
 	dataMap := make(map[string]interface{}, 5)
 	dataMap["status"] = Con_HS_Status_Success

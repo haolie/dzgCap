@@ -62,7 +62,7 @@ func (ga *GameArea) StartTask(ctx context.Context, taskType TaskEnum) error {
 
 		// 返回主页面
 		ga.clickBack(con_Start_Back_Count, func() bool {
-			return false
+			return true
 		})
 
 		// 获取主页标识图片

@@ -10,6 +10,7 @@ import (
 	"github.com/go-vgo/robotgo"
 
 	"dzgCap/ConfigManger"
+	"dzgCap/Loger"
 	"dzgCap/src/gameAreaModel"
 	. "dzgCap/src/model"
 	"dzgCap/src/task/taskCenter"
@@ -167,6 +168,14 @@ func (m *meeting) joinMeeting() {
 
 	// 点击参宴按钮
 	m.gArea.ClickRectKey(Sys_Key_Rect_Meeting_Join_Btn, "")
+	robotgo.MilliSleep(100)
+
+	// 点击参宴按钮
+	m.gArea.ClickRectKey(Sys_Key_Rect_Meeting_Join_Btn, "")
+	robotgo.MilliSleep(100)
+
+	// 点击参宴按钮
+	m.gArea.ClickRectKey(Sys_Key_Rect_Meeting_Join_Btn, "")
 	robotgo.MilliSleep(800)
 
 	// 返回操作
@@ -190,12 +199,23 @@ func (m *meeting) drawMeetingReward() {
 
 	// 返回主页面
 	if m.gArea.ToHome() != nil {
-		panic(fmt.Errorf("screen err"))
+		Loger.LogErr("screen err")
+		return
 	}
 
 	// 点击宴会icon
 	m.gArea.ClickPoint(m.meetingIconP.X, m.meetingIconP.Y, "")
-	time.Sleep(Sys_Con_jump_Waite * 2)
+	m.clickWait(func() bool {
+		if m.isMeetingList() {
+			return true
+		}
+
+		if m.isMeeting() {
+			return true
+		}
+
+		return false
+	})
 
 	// 抢占
 	if m.grab() {
@@ -205,7 +225,10 @@ func (m *meeting) drawMeetingReward() {
 	// 如果是宴会列表 点击第宴会
 	if m.isMeetingList() {
 		m.gArea.ClickPointKey(Sys_Key_Point_Meeting_Item1, "")
-		time.Sleep(Sys_Con_jump_Waite * 2)
+
+		m.clickWait(func() bool {
+			return m.isMeeting()
+		})
 
 		// 抢占
 		if m.grab() {
@@ -223,7 +246,9 @@ func (m *meeting) drawMeetingReward() {
 
 	for i := 0; i < 5; i++ {
 		m.gArea.GoBack()
-		time.Sleep(Sys_Con_jump_Waite)
+		m.clickWait(func() bool {
+			return m.isMeetingList()
+		})
 
 		// 抢占
 		if m.grab() {
@@ -232,7 +257,9 @@ func (m *meeting) drawMeetingReward() {
 
 		if m.isMeetingList() {
 			m.gArea.ClickPointKey(Sys_Key_Point_Meeting_Item2, "")
-			time.Sleep(Sys_Con_jump_Waite * 2)
+			m.clickWait(func() bool {
+				return m.isMeeting()
+			})
 
 			// 抢占
 			if m.grab() {
@@ -251,7 +278,7 @@ func (m *meeting) drawMeetingReward() {
 
 	// 返回主页面
 	if m.gArea.ToHome() != nil {
-		panic(fmt.Errorf("screen err"))
+		Loger.LogErr("screen err")
 	}
 }
 
@@ -303,7 +330,10 @@ func (m *meeting) findMeetingIcon() bool {
 
 		// 点击Icon
 		m.gArea.ClickPoint(px, p.Y, "")
-		time.Sleep(time.Second * 2)
+		m.clickWait(func() bool {
+			return m.isMeetingList() || m.isMeeting()
+		})
+
 		// 抢占
 		if m.grab() {
 			return false
@@ -335,7 +365,7 @@ func (m *meeting) rewardDrawFn() {
 
 	// 领奖
 	m.gArea.ClickPointKey(Sys_Key_Point_Meeting_DrawNumReward, "")
-	time.Sleep(Sys_Con_jump_Waite)
+	time.Sleep(time.Millisecond * 500)
 }
 
 // 判断是否是宴会列表界面
@@ -358,6 +388,23 @@ func (m *meeting) isMeeting() bool {
 	}
 
 	return false
+}
+
+func (m *meeting) clickWait(cb func() bool) {
+	var i time.Duration
+	var span = time.Millisecond * 150
+	for {
+		if i*span > time.Second*2 {
+			break
+		}
+
+		if cb() {
+			break
+		}
+
+		i += 1
+		time.Sleep(span)
+	}
 }
 
 // 宴会抢占
